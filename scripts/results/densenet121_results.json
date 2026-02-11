@@ -1,0 +1,77 @@
+{
+    "model_name": "densenet121",
+    "config": {
+        "img_height": 224,
+        "img_width": 224,
+        "batch_size": 16,
+        "num_classes": 3,
+        "initial_epochs": 15,
+        "fine_tune_epochs": 25,
+        "initial_lr": 0.0001,
+        "fine_tune_lr": 1e-05,
+        "focal_gamma": 2.0,
+        "focal_alpha": 0.25,
+        "mixup_alpha": 0.2,
+        "dropout_rate": 0.5,
+        "use_cbam": true,
+        "use_mixup": true,
+        "use_clahe": true
+    },
+    "classification_report": {
+        "debut": {
+            "precision": 0.800952380952381,
+            "recall": 0.9428251121076233,
+            "f1-score": 0.8661174047373842,
+            "support": 892
+        },
+        "grave": {
+            "precision": 0.8623853211009175,
+            "recall": 0.669833729216152,
+            "f1-score": 0.7540106951871657,
+            "support": 421
+        },
+        "normal": {
+            "precision": 0.896551724137931,
+            "recall": 0.6816479400749064,
+            "f1-score": 0.774468085106383,
+            "support": 267
+        },
+        "accuracy": 0.8259493670886076,
+        "macro avg": {
+            "precision": 0.8532964753970765,
+            "recall": 0.7647689271328938,
+            "f1-score": 0.7981987283436442,
+            "support": 1580
+        },
+        "weighted avg": {
+            "precision": 0.8532964753970765,
+            "recall": 0.7647689271328938,
+            "f1-score": 0.7981987283436442,
+            "support": 1580
+        }
+    },
+    "confusion_matrix": [
+        [
+            841,
+            40,
+            11
+        ],
+        [
+            129,
+            282,
+            10
+        ],
+        [
+            80,
+            5,
+            182
+        ]
+    ],
+    "auc_scores": [
+        0.9386862550839503,
+        0.9331268867624846,
+        0.9605186966406235
+    ],
+    "macro_f1": 0.7981987283436442,
+    "accuracy": 0.8259493670886076
+}

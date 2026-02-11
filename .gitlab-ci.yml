@@ -1,0 +1,58 @@
+image: python:3.12-slim
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  DOCKER_REGISTRY: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+  TAG_LATEST: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:latest
+  TAG_COMMIT: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
+  DOCKER_TLS_CERTDIR: ""
+  AWS_DEFAULT_REGION: $AWS_REGION
+  IMAGE_NAME: moussokene
+  DOCKER_HOST: tcp://docker:2375
+  CONTAINER_IMAGE: $DOCKER_REGISTRY/$IMAGE_NAME:$CI_PIPELINE_IID
+  EC2_IP: "ec2-16-16-39-193.eu-north-1.compute.amazonaws.com"
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: 
+    name: amazon/aws-cli
+    entrypoint: [""]
+  services:
+    - docker:dind
+  before_script:
+    - amazon-linux-extras install docker
+    - aws --version
+    - docker --version
+  script:
+    - docker system prune -af  # Nettoyage complet des conteneurs et images inutilisées
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - docker build -t $DOCKER_REGISTRY/$IMAGE_NAME:$CI_PIPELINE_IID .
+    - docker image ls -a        # Vérifier les images Docker présentes
+    - docker push $DOCKER_REGISTRY/$IMAGE_NAME:$CI_PIPELINE_IID
+    - docker image prune -a -f  # Supprimer les images inutilisées après le push
+  only:
+    - main
+
+deploy:
+  stage: deploy
+  image: 
+    name: ubuntu:latest
+    entrypoint: [""]
+  before_script:
+   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+   - eval $(ssh-agent -s)
+   - mkdir -p ~/.ssh
+   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/test.pem
+   - chmod 600 ~/.ssh/test.pem
+  script:
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/test.pem $AWS_EC2_USER@${EC2_IP} "docker container stop moussokene-backend || true && docker container rm moussokene-backend || true && docker image prune -a -f"
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/test.pem $AWS_EC2_USER@${EC2_IP} "aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com && docker pull $CONTAINER_IMAGE"
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/test.pem $AWS_EC2_USER@${EC2_IP} "docker run --rm --name moussokene-backend -itd -p 5001:5001 $CONTAINER_IMAGE"
+  dependencies:
+    - build
+  only:
+    - main
