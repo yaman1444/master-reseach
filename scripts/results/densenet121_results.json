@@ -5,73 +5,113 @@
         "img_width": 224,
         "batch_size": 16,
         "num_classes": 3,
-        "initial_epochs": 15,
-        "fine_tune_epochs": 25,
+        "class_names": [
+            "debut",
+            "grave",
+            "normal"
+        ],
+        "initial_epochs": 20,
+        "fine_tune_epochs": 30,
         "initial_lr": 0.0001,
         "fine_tune_lr": 1e-05,
         "focal_gamma": 2.0,
-        "focal_alpha": 0.25,
+        "focal_alpha": [
+            0.46315682488057724,
+            0.9830267303587763,
+            1.5538164447606464
+        ],
+        "label_smoothing": 0.1,
         "mixup_alpha": 0.2,
-        "dropout_rate": 0.5,
-        "use_cbam": true,
         "use_mixup": true,
-        "use_clahe": true
+        "use_clahe": true,
+        "dropout_rate": 0.4,
+        "l2_reg": 0.0001,
+        "use_cbam": true,
+        "head_units": [
+            512,
+            256
+        ],
+        "train_dir": "../datasets_split/train/",
+        "val_dir": "../datasets_split/val/",
+        "test_dir": "../datasets_split/test/",
+        "use_tta": true,
+        "tta_augmentations": 8
     },
     "classification_report": {
         "debut": {
-            "precision": 0.800952380952381,
-            "recall": 0.9428251121076233,
-            "f1-score": 0.8661174047373842,
-            "support": 892
+            "precision": 0.9518072289156626,
+            "recall": 0.5851851851851851,
+            "f1-score": 0.7247706422018347,
+            "support": 135
         },
         "grave": {
-            "precision": 0.8623853211009175,
-            "recall": 0.669833729216152,
-            "f1-score": 0.7540106951871657,
-            "support": 421
+            "precision": 0.5876288659793815,
+            "recall": 0.890625,
+            "f1-score": 0.7080745341614906,
+            "support": 64
         },
         "normal": {
-            "precision": 0.896551724137931,
-            "recall": 0.6816479400749064,
-            "f1-score": 0.774468085106383,
-            "support": 267
+            "precision": 0.5333333333333333,
+            "recall": 0.7804878048780488,
+            "f1-score": 0.6336633663366336,
+            "support": 41
         },
-        "accuracy": 0.8259493670886076,
+        "accuracy": 0.7,
         "macro avg": {
-            "precision": 0.8532964753970765,
-            "recall": 0.7647689271328938,
-            "f1-score": 0.7981987283436442,
-            "support": 1580
+            "precision": 0.6909231427427924,
+            "recall": 0.752099330021078,
+            "f1-score": 0.6888361808999862,
+            "support": 240
         },
-        "weighted avg": {
-            "precision": 0.8532964753970765,
-            "recall": 0.7647689271328938,
-            "f1-score": 0.7981987283436442,
-            "support": 1580
+        "auc_per_class": {
+            "debut": 0.9190828924162258,
+            "grave": 0.9130859375,
+            "normal": 0.9134697879642113
+        },
+        "auc_macro": 0.9152128726268124,
+        "ci_95": {
+            "accuracy": {
+                "mean": 0.69965,
+                "lower": 0.6415625000000001,
+                "upper": 0.7583333333333333
+            },
+            "macro_f1": {
+                "mean": 0.687035095472605,
+                "lower": 0.6239840040880318,
+                "upper": 0.7467391829567135
+            }
         }
     },
     "confusion_matrix": [
         [
-            841,
-            40,
-            11
+            79,
+            32,
+            24
         ],
         [
-            129,
-            282,
-            10
+            3,
+            57,
+            4
         ],
         [
-            80,
-            5,
-            182
+            1,
+            8,
+            32
         ]
     ],
-    "auc_scores": [
-        0.9386862550839503,
-        0.9331268867624846,
-        0.9605186966406235
-    ],
-    "macro_f1": 0.7981987283436442,
-    "accuracy": 0.8259493670886076
+    "macro_f1": 0.6888361808999862,
+    "accuracy": 0.7,
+    "ci_95": {
+        "accuracy": {
+            "mean": 0.69965,
+            "lower": 0.6415625000000001,
+            "upper": 0.7583333333333333
+        },
+        "macro_f1": {
+            "mean": 0.687035095472605,
+            "lower": 0.6239840040880318,
+            "upper": 0.7467391829567135
+        }
+    },
+    "tta_used": true
 }
