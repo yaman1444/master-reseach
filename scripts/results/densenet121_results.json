@@ -1,9 +1,9 @@
 {
     "model_name": "densenet121",
     "config": {
-        "img_height": 224,
-        "img_width": 224,
-        "batch_size": 16,
+        "img_height": 320,
+        "img_width": 320,
+        "batch_size": 12,
         "num_classes": 3,
         "class_names": [
             "debut",
@@ -13,13 +13,10 @@
         "initial_epochs": 20,
         "fine_tune_epochs": 30,
         "initial_lr": 0.0001,
-        "fine_tune_lr": 1e-05,
+        "fine_tune_lr": 2e-05,
+        "warmup_epochs": 3,
+        "loss_type": "weighted_ce",
         "focal_gamma": 2.0,
-        "focal_alpha": [
-            0.46315682488057724,
-            0.9830267303587763,
-            1.5538164447606464
-        ],
         "label_smoothing": 0.1,
         "mixup_alpha": 0.2,
         "use_mixup": true,
@@ -35,82 +32,87 @@
         "val_dir": "../datasets_split/val/",
         "test_dir": "../datasets_split/test/",
         "use_tta": true,
-        "tta_augmentations": 8
+        "tta_augmentations": 8,
+        "focal_alpha": [
+            0.46315682488057724,
+            0.9830267303587763,
+            1.5538164447606464
+        ]
     },
     "classification_report": {
         "debut": {
-            "precision": 0.9518072289156626,
-            "recall": 0.5851851851851851,
-            "f1-score": 0.7247706422018347,
+            "precision": 0.9032258064516129,
+            "recall": 0.6222222222222222,
+            "f1-score": 0.7368421052631579,
             "support": 135
         },
         "grave": {
-            "precision": 0.5876288659793815,
-            "recall": 0.890625,
-            "f1-score": 0.7080745341614906,
+            "precision": 0.6756756756756757,
+            "recall": 0.78125,
+            "f1-score": 0.7246376811594203,
             "support": 64
         },
         "normal": {
-            "precision": 0.5333333333333333,
-            "recall": 0.7804878048780488,
-            "f1-score": 0.6336633663366336,
+            "precision": 0.5205479452054794,
+            "recall": 0.926829268292683,
+            "f1-score": 0.6666666666666666,
             "support": 41
         },
-        "accuracy": 0.7,
+        "accuracy": 0.7166666666666667,
         "macro avg": {
-            "precision": 0.6909231427427924,
-            "recall": 0.752099330021078,
-            "f1-score": 0.6888361808999862,
+            "precision": 0.6998164757775892,
+            "recall": 0.7767671635049683,
+            "f1-score": 0.7093821510297483,
             "support": 240
         },
         "auc_per_class": {
-            "debut": 0.9190828924162258,
-            "grave": 0.9130859375,
-            "normal": 0.9134697879642113
+            "debut": 0.899400352733686,
+            "grave": 0.9069602272727274,
+            "normal": 0.9346733668341708
         },
-        "auc_macro": 0.9152128726268124,
+        "auc_macro": 0.9136779822801947,
         "ci_95": {
             "accuracy": {
-                "mean": 0.69965,
-                "lower": 0.6415625000000001,
-                "upper": 0.7583333333333333
+                "mean": 0.7167,
+                "lower": 0.6625,
+                "upper": 0.7708333333333334
             },
             "macro_f1": {
-                "mean": 0.687035095472605,
-                "lower": 0.6239840040880318,
-                "upper": 0.7467391829567135
+                "mean": 0.7080385680946346,
+                "lower": 0.6479563712629745,
+                "upper": 0.7650057842420512
             }
         }
     },
     "confusion_matrix": [
         [
-            79,
-            32,
-            24
+            84,
+            24,
+            27
+        ],
+        [
+            6,
+            50,
+            8
         ],
         [
             3,
-            57,
-            4
-        ],
-        [
-            1,
-            8,
-            32
+            0,
+            38
         ]
     ],
-    "macro_f1": 0.6888361808999862,
-    "accuracy": 0.7,
+    "macro_f1": 0.7093821510297483,
+    "accuracy": 0.7166666666666667,
     "ci_95": {
         "accuracy": {
-            "mean": 0.69965,
-            "lower": 0.6415625000000001,
-            "upper": 0.7583333333333333
+            "mean": 0.7167,
+            "lower": 0.6625,
+            "upper": 0.7708333333333334
         },
         "macro_f1": {
-            "mean": 0.687035095472605,
-            "lower": 0.6239840040880318,
-            "upper": 0.7467391829567135
+            "mean": 0.7080385680946346,
+            "lower": 0.6479563712629745,
+            "upper": 0.7650057842420512
         }
     },
     "tta_used": true

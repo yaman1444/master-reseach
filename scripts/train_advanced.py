@@ -56,9 +56,9 @@ tf.random.set_seed(42)
 # CONFIGURATION
 # ============================================================
 CONFIG = {
-    'img_height': 224,
-    'img_width': 224,
-    'batch_size': 16,
+    'img_height': 320,
+    'img_width': 320,
+    'batch_size': 12,           # Increased for DenseNet121 (lighter than EfficientNetV2S)
     'num_classes': 3,
     'class_names': ['debut', 'grave', 'normal'],
 
@@ -66,12 +66,13 @@ CONFIG = {
     'initial_epochs': 20,
     'fine_tune_epochs': 30,
     'initial_lr': 1e-4,
-    'fine_tune_lr': 1e-5,
+    'fine_tune_lr': 2e-5,       # Slightly increased fine-tune LR
+    'warmup_epochs': 3,         # NEW: LR Warmup epochs
 
-    # Focal Loss
+    # Loss Configuration
+    'loss_type': 'weighted_ce', # NEW: Choice between 'focal' and 'weighted_ce'
     'focal_gamma': 2.0,
-    'focal_alpha': None,        # Will be computed from data (class-aware)
-    'label_smoothing': 0.1,     # NEW: label smoothing
+    'label_smoothing': 0.1,
 
     # Augmentation
     'mixup_alpha': 0.2,
@@ -100,38 +101,43 @@ CONFIG = {
 # ============================================================
 class CosineAnnealingWarmRestarts(tf.keras.callbacks.Callback):
     """
-    SGDR: Stochastic Gradient Descent with Warm Restarts
-    Loshchilov & Hutter, ICLR'17
-
-    η_t = η_min + 0.5(η_max - η_min)(1 + cos(π * T_cur / T_i))
+    SGDR with Linear Warmup.
     """
-    def __init__(self, initial_lr, min_lr, first_cycle_epochs, cycle_mult=1.0):
+    def __init__(self, initial_lr, min_lr, first_cycle_epochs, cycle_mult=1.0, warmup_epochs=0):
         super().__init__()
         self.initial_lr = initial_lr
         self.min_lr = min_lr
         self.first_cycle_epochs = first_cycle_epochs
         self.cycle_mult = cycle_mult
+        self.warmup_epochs = warmup_epochs
         self.current_cycle_epochs = first_cycle_epochs
         self.cycle_epoch = 0
 
     def on_epoch_begin(self, epoch, logs=None):
-        # Check if we need to restart
-        if self.cycle_epoch >= self.current_cycle_epochs:
-            self.cycle_epoch = 0
-            self.current_cycle_epochs = int(
-                self.current_cycle_epochs * self.cycle_mult
-            )
+        if epoch < self.warmup_epochs:
+            # Linear Warmup
+            lr = (epoch + 1) / self.warmup_epochs * self.initial_lr
+        else:
+            # Shifted cycle epoch for warmup
+            adj_epoch = epoch - self.warmup_epochs
 
-        lr = self.min_lr + 0.5 * (self.initial_lr - self.min_lr) * \
-             (1 + np.cos(np.pi * self.cycle_epoch / self.current_cycle_epochs))
+            # Check if we need to restart
+            if adj_epoch > 0 and self.cycle_epoch >= self.current_cycle_epochs:
+                self.cycle_epoch = 0
+                self.current_cycle_epochs = int(
+                    self.current_cycle_epochs * self.cycle_mult
+                )
+
+            lr = self.min_lr + 0.5 * (self.initial_lr - self.min_lr) * \
+                 (1 + np.cos(np.pi * self.cycle_epoch / self.current_cycle_epochs))
+            self.cycle_epoch += 1
 
         if hasattr(self.model.optimizer, 'learning_rate'):
             self.model.optimizer.learning_rate.assign(lr)
         else:
             tf.keras.backend.set_value(self.model.optimizer.lr, lr)
 
-        self.cycle_epoch += 1
-        print(f"\nEpoch {epoch+1}: lr = {lr:.6f}")
+        print(f"\nEpoch {epoch+1}: lr = {lr:.6e}")
 
 
 # ============================================================
@@ -442,12 +448,24 @@ def train_model(model_name='densenet121', config=None):
 
     alpha_weights = compute_class_alpha(list(train_counts_dict.values()))
     config['focal_alpha'] = alpha_weights
-    print(f"Class-aware α weights: {dict(zip(train_counts_dict.keys(), alpha_weights))}")
+    print(f"Class-aware weights: {dict(zip(train_counts_dict.keys(), alpha_weights))}")
 
-    class_weights = compute_class_weights(
-        train_gen.base_generator if hasattr(train_gen, 'base_generator') else train_gen
-    )
-    print(f"Class weights: {class_weights}")
+    # Choice of Loss
+    if config.get('loss_type') == 'weighted_ce':
+        print("Using Weighted Categorical Cross-Entropy + Label Smoothing")
+        # Custom Weighted CE can be simulated by Focal Loss with gamma=0
+        loss_fn = FocalLoss(
+            gamma=0.0,
+            alpha=config['focal_alpha'],
+            label_smoothing=config['label_smoothing']
+        )
+    else:
+        print("Using Focal Loss")
+        loss_fn = FocalLoss(
+            gamma=config['focal_gamma'],
+            alpha=config['focal_alpha'],
+            label_smoothing=config['label_smoothing']
+        )
 
     # Build model
     model, base_model = build_model(
@@ -469,11 +487,7 @@ def train_model(model_name='densenet121', config=None):
 
     model.compile(
         optimizer=Adam(learning_rate=config['initial_lr']),
-        loss=FocalLoss(
-            gamma=config['focal_gamma'],
-            alpha=config['focal_alpha'],
-            label_smoothing=config['label_smoothing']
-        ),
+        loss=loss_fn,
         metrics=['accuracy', tf.keras.metrics.AUC(name='auc')]
     )
 
@@ -491,7 +505,8 @@ def train_model(model_name='densenet121', config=None):
             initial_lr=config['initial_lr'],
             min_lr=config['initial_lr'] * 0.01,
             first_cycle_epochs=config['initial_epochs'],
-            cycle_mult=1.0
+            cycle_mult=1.0,
+            warmup_epochs=config.get('warmup_epochs', 0)
         ),
         TensorBoard(log_dir=f'logs/{model_name}_phase1')
     ]
@@ -500,7 +515,6 @@ def train_model(model_name='densenet121', config=None):
         train_gen,
         epochs=config['initial_epochs'],
         validation_data=val_gen,
-        class_weight=class_weights,
         callbacks=callbacks_p1,
         verbose=1
     )
@@ -522,11 +536,7 @@ def train_model(model_name='densenet121', config=None):
 
     model.compile(
         optimizer=Adam(learning_rate=config['fine_tune_lr']),
-        loss=FocalLoss(
-            gamma=config['focal_gamma'],
-            alpha=config['focal_alpha'],
-            label_smoothing=config['label_smoothing']
-        ),
+        loss=loss_fn,
         metrics=['accuracy', tf.keras.metrics.AUC(name='auc')]
     )
 
@@ -544,7 +554,8 @@ def train_model(model_name='densenet121', config=None):
             initial_lr=config['fine_tune_lr'],
             min_lr=config['fine_tune_lr'] * 0.1,
             first_cycle_epochs=10,
-            cycle_mult=1.5
+            cycle_mult=1.5,
+            warmup_epochs=3 # Small warmup for fine-tuning too
         ),
         TensorBoard(log_dir=f'logs/{model_name}_phase2')
     ]
@@ -553,7 +564,6 @@ def train_model(model_name='densenet121', config=None):
         train_gen,
         epochs=config['fine_tune_epochs'],
         validation_data=val_gen,
-        class_weight=class_weights,
         callbacks=callbacks_p2,
         verbose=1
     )
@@ -749,7 +759,7 @@ if __name__ == '__main__':
     os.makedirs('logs', exist_ok=True)
 
     print("\n" + "=" * 80)
-    print("🚀 STARTING TRAINING: DenseNet121 — Advanced Pipeline v2")
+    print("🚀 STARTING TRAINING: DenseNet121 — Expérience 3 (Stable-320)")
     print("=" * 80 + "\n")
 
     model, results, history = train_model(
