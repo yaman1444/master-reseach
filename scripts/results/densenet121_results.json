@@ -3,7 +3,7 @@
     "config": {
         "img_height": 320,
         "img_width": 320,
-        "batch_size": 12,
+        "batch_size": 14,
         "num_classes": 3,
         "class_names": [
             "debut",
@@ -11,11 +11,11 @@
             "normal"
         ],
         "initial_epochs": 20,
-        "fine_tune_epochs": 30,
+        "fine_tune_epochs": 40,
         "initial_lr": 0.0001,
-        "fine_tune_lr": 2e-05,
-        "warmup_epochs": 3,
-        "loss_type": "weighted_ce",
+        "fine_tune_lr": 1e-05,
+        "warmup_epochs": 5,
+        "loss_type": "focal",
         "focal_gamma": 2.0,
         "label_smoothing": 0.1,
         "mixup_alpha": 0.2,
@@ -41,78 +41,78 @@
     },
     "classification_report": {
         "debut": {
-            "precision": 0.9032258064516129,
-            "recall": 0.6222222222222222,
-            "f1-score": 0.7368421052631579,
+            "precision": 0.8512396694214877,
+            "recall": 0.762962962962963,
+            "f1-score": 0.8046874999999999,
             "support": 135
         },
         "grave": {
-            "precision": 0.6756756756756757,
-            "recall": 0.78125,
-            "f1-score": 0.7246376811594203,
+            "precision": 0.6805555555555556,
+            "recall": 0.765625,
+            "f1-score": 0.7205882352941176,
             "support": 64
         },
         "normal": {
-            "precision": 0.5205479452054794,
-            "recall": 0.926829268292683,
-            "f1-score": 0.6666666666666666,
+            "precision": 0.6382978723404256,
+            "recall": 0.7317073170731707,
+            "f1-score": 0.6818181818181819,
             "support": 41
         },
-        "accuracy": 0.7166666666666667,
+        "accuracy": 0.7583333333333333,
         "macro avg": {
-            "precision": 0.6998164757775892,
-            "recall": 0.7767671635049683,
-            "f1-score": 0.7093821510297483,
+            "precision": 0.7233643657724896,
+            "recall": 0.7534317600120447,
+            "f1-score": 0.7356979723707665,
             "support": 240
         },
         "auc_per_class": {
-            "debut": 0.899400352733686,
-            "grave": 0.9069602272727274,
-            "normal": 0.9346733668341708
+            "debut": 0.8687830687830688,
+            "grave": 0.8932883522727273,
+            "normal": 0.9209461943865669
         },
-        "auc_macro": 0.9136779822801947,
+        "auc_macro": 0.8943392051474545,
         "ci_95": {
             "accuracy": {
-                "mean": 0.7167,
-                "lower": 0.6625,
-                "upper": 0.7708333333333334
+                "mean": 0.7586291666666667,
+                "lower": 0.7,
+                "upper": 0.8125
             },
             "macro_f1": {
-                "mean": 0.7080385680946346,
-                "lower": 0.6479563712629745,
-                "upper": 0.7650057842420512
+                "mean": 0.7342231113581882,
+                "lower": 0.6701282256272405,
+                "upper": 0.7921782908828255
             }
         }
     },
     "confusion_matrix": [
         [
-            84,
-            24,
-            27
+            103,
+            20,
+            12
         ],
         [
-            6,
-            50,
-            8
+            10,
+            49,
+            5
         ],
         [
+            8,
             3,
-            0,
-            38
+            30
         ]
     ],
-    "macro_f1": 0.7093821510297483,
-    "accuracy": 0.7166666666666667,
+    "macro_f1": 0.7356979723707665,
+    "accuracy": 0.7583333333333333,
     "ci_95": {
         "accuracy": {
-            "mean": 0.7167,
-            "lower": 0.6625,
-            "upper": 0.7708333333333334
+            "mean": 0.7586291666666667,
+            "lower": 0.7,
+            "upper": 0.8125
         },
         "macro_f1": {
-            "mean": 0.7080385680946346,
-            "lower": 0.6479563712629745,
-            "upper": 0.7650057842420512
+            "mean": 0.7342231113581882,
+            "lower": 0.6701282256272405,
+            "upper": 0.7921782908828255
         }
     },
     "tta_used": true

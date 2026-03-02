@@ -58,20 +58,20 @@ tf.random.set_seed(42)
 CONFIG = {
     'img_height': 320,
     'img_width': 320,
-    'batch_size': 12,           # Increased for DenseNet121 (lighter than EfficientNetV2S)
+    'batch_size': 14,           # Increased for DenseNet121
     'num_classes': 3,
     'class_names': ['debut', 'grave', 'normal'],
 
     # Training phases
     'initial_epochs': 20,
-    'fine_tune_epochs': 30,
+    'fine_tune_epochs': 40,      # Increased to allow more time for fine-tuning
     'initial_lr': 1e-4,
-    'fine_tune_lr': 2e-5,       # Slightly increased fine-tune LR
-    'warmup_epochs': 3,         # NEW: LR Warmup epochs
+    'fine_tune_lr': 1e-5,       # Reduced to be more conservative during fine-tuning
+    'warmup_epochs': 5,         # Increased warmup
 
     # Loss Configuration
-    'loss_type': 'weighted_ce', # NEW: Choice between 'focal' and 'weighted_ce'
-    'focal_gamma': 2.0,
+    'loss_type': 'focal',       # Focal Loss for Experiment 5
+    'focal_gamma': 2.0,         # Focus on hard examples
     'label_smoothing': 0.1,
 
     # Augmentation
@@ -80,10 +80,10 @@ CONFIG = {
     'use_clahe': True,
 
     # Architecture
-    'dropout_rate': 0.4,        # Reduced from 0.5 (with BN, less dropout needed)
-    'l2_reg': 1e-4,             # NEW: L2 regularization
+    'dropout_rate': 0.4,
+    'l2_reg': 1e-4,
     'use_cbam': True,
-    'head_units': [512, 256],   # NEW: configurable head
+    'head_units': [512, 256],
 
     # Data paths (using proper split)
     'train_dir': '../datasets_split/train/',
@@ -547,7 +547,7 @@ def train_model(model_name='densenet121', config=None):
             save_best_only=True, verbose=1
         ),
         EarlyStopping(
-            monitor='val_loss', patience=10,
+            monitor='val_auc', mode='max', patience=15,
             restore_best_weights=True, verbose=1
         ),
         CosineAnnealingWarmRestarts(
