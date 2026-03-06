@@ -1,0 +1,8 @@
+{
+    "thresholds": {
+        "debut": 0.5,
+        "grave": 0.55,
+        "normal": 0.55
+    },
+    "expected_macro_f1_no_tta": 0.7393802431090567
+}

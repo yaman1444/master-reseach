@@ -99,11 +99,8 @@ class AugmentedDataGenerator(tf.keras.utils.Sequence):
             for i in range(x.shape[0]):
                 x[i] = apply_clahe(x[i])
         
-        # Apply Mixup/CutMix with probability
+        # Exp4: Apply Mixup only (CutMix disabled — too aggressive for medical images)
         if self.use_mixup and np.random.rand() < self.mixup_prob:
-            if np.random.rand() < 0.5:
-                x, y = mixup_batch(x, y, self.mixup_alpha)
-            else:
-                x, y = cutmix_batch(x, y, self.mixup_alpha)
+            x, y = mixup_batch(x, y, self.mixup_alpha)
         
         return x, y

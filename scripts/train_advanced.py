@@ -64,23 +64,26 @@ CONFIG = {
 
     # Training phases
     'initial_epochs': 20,
-    'fine_tune_epochs': 40,      # Increased to allow more time for fine-tuning
+    'fine_tune_epochs': 40,
     'initial_lr': 1e-4,
-    'fine_tune_lr': 1e-5,       # Reduced to be more conservative during fine-tuning
-    'warmup_epochs': 5,         # Increased warmup
+    'fine_tune_lr': 5e-6,       # Exp5: 5e-6 (balanced between 1e-5 and 3e-6)
+    'warmup_epochs': 5,
 
     # Loss Configuration
-    'loss_type': 'focal',       # Focal Loss for Experiment 5
-    'focal_gamma': 2.0,         # Focus on hard examples
+    'loss_type': 'focal',       # Focal Loss
+    'focal_gamma': 2.0,         # Exp5: reverted to 2.0 (3.0 was too extreme)
     'label_smoothing': 0.1,
+    # Exp5: Balanced alpha weights. debut gets 1.2 (boosted from 0.46),
+    # grave gets 1.0, normal gets 1.5 (to prevent collapse)
+    'focal_alpha_override': [1.2, 1.0, 1.5],
 
     # Augmentation
-    'mixup_alpha': 0.2,
+    'mixup_alpha': 0.1,         # Exp4: reduced from 0.2 (less aggressive mixing)
     'use_mixup': True,
     'use_clahe': True,
 
     # Architecture
-    'dropout_rate': 0.4,
+    'dropout_rate': 0.3,        # Exp4: reduced from 0.4 (model was underfitting)
     'l2_reg': 1e-4,
     'use_cbam': True,
     'head_units': [512, 256],
@@ -93,6 +96,9 @@ CONFIG = {
     # TTA
     'use_tta': True,
     'tta_augmentations': 8,
+
+    # Exp5: Fine-tuning control
+    'fine_tune_pct': 0.15,      # Unfreeze top 15% (balanced between 10% and 20%)
 }
 
 
@@ -446,9 +452,14 @@ def train_model(model_name='densenet121', config=None):
                     else train_gen.classes) if l == cls_idx)
         train_counts_dict[cls_name] = count
 
-    alpha_weights = compute_class_alpha(list(train_counts_dict.values()))
+    # Exp4: Use forced alpha if provided, otherwise compute automatically
+    if config.get('focal_alpha_override'):
+        alpha_weights = config['focal_alpha_override']
+        print(f"⚡ Using FORCED alpha weights (debut-priority): {dict(zip(train_counts_dict.keys(), alpha_weights))}")
+    else:
+        alpha_weights = compute_class_alpha(list(train_counts_dict.values()))
+        print(f"Class-aware weights (auto): {dict(zip(train_counts_dict.keys(), alpha_weights))}")
     config['focal_alpha'] = alpha_weights
-    print(f"Class-aware weights: {dict(zip(train_counts_dict.keys(), alpha_weights))}")
 
     # Choice of Loss
     if config.get('loss_type') == 'weighted_ce':
@@ -498,7 +509,7 @@ def train_model(model_name='densenet121', config=None):
             save_best_only=True, verbose=1
         ),
         EarlyStopping(
-            monitor='val_loss', patience=7,
+            monitor='val_auc', mode='max', patience=10,  # Exp4: harmonized on val_auc, patience 10
             restore_best_weights=True, verbose=1
         ),
         CosineAnnealingWarmRestarts(
@@ -526,13 +537,14 @@ def train_model(model_name='densenet121', config=None):
 
     base_model.trainable = True
     total_layers = len(base_model.layers)
-    freeze_until = int(total_layers * 0.8)
+    fine_tune_pct = config.get('fine_tune_pct', 0.10)  # Exp4: only 10%
+    freeze_until = int(total_layers * (1.0 - fine_tune_pct))
 
     for layer in base_model.layers[:freeze_until]:
         layer.trainable = False
 
     print(f"Total layers: {total_layers}, Frozen: {freeze_until}, "
-          f"Trainable: {total_layers - freeze_until}")
+          f"Trainable: {total_layers - freeze_until} ({fine_tune_pct*100:.0f}%)")
 
     model.compile(
         optimizer=Adam(learning_rate=config['fine_tune_lr']),
@@ -547,7 +559,7 @@ def train_model(model_name='densenet121', config=None):
             save_best_only=True, verbose=1
         ),
         EarlyStopping(
-            monitor='val_auc', mode='max', patience=15,
+            monitor='val_auc', mode='max', patience=12,  # Exp4: reduced from 15
             restore_best_weights=True, verbose=1
         ),
         CosineAnnealingWarmRestarts(
@@ -759,7 +771,7 @@ if __name__ == '__main__':
     os.makedirs('logs', exist_ok=True)
 
     print("\n" + "=" * 80)
-    print("🚀 STARTING TRAINING: DenseNet121 — Expérience 3 (Stable-320)")
+    print("🚀 STARTING TRAINING: DenseNet121 — Expérience 5 (Balanced-Priority)")
     print("=" * 80 + "\n")
 
     model, results, history = train_model(
