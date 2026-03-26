@@ -21,7 +21,8 @@ import json
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from sklearn.metrics import roc_curve, precision_recall_curve
+from sklearn.metrics import roc_curve, precision_recall_curve, average_precision_score
+from sklearn.utils import resample
 
 # Import custom modules
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -188,6 +189,61 @@ def compute_metrics(y_true, y_pred, class_names):
     return results
 
 
+def compute_confidence_intervals(y_true, y_pred_proba, thresholds, class_names, n_iterations=1000):
+    print(f"\n🔄 Computing 95% Confidence Intervals via Bootstrap (N={n_iterations})...")
+    
+    n_samples = len(y_true)
+    boot_results = {c: {'precision': [], 'recall': [], 'f1': [], 'auprc': []} for c in class_names}
+    boot_results['macro_f1'] = []
+    boot_results['accuracy'] = []
+    
+    for i in range(n_iterations):
+        indices = resample(np.arange(n_samples), replace=True)
+        y_true_boot = y_true[indices]
+        y_proba_boot = y_pred_proba[indices]
+        
+        y_pred_boot = predict_with_thresholds(y_proba_boot, thresholds, class_names)
+        metrics = compute_metrics(y_true_boot, y_pred_boot, class_names)
+        
+        boot_results['accuracy'].append(metrics['accuracy'])
+        boot_results['macro_f1'].append(metrics['macro_f1'])
+        
+        for j, name in enumerate(class_names):
+            boot_results[name]['precision'].append(metrics[name]['precision'])
+            boot_results[name]['recall'].append(metrics[name]['recall'])
+            boot_results[name]['f1'].append(metrics[name]['f1'])
+            
+            mask_t = (y_true_boot == j)
+            if np.sum(mask_t) > 0:
+                auprc = average_precision_score(mask_t, y_proba_boot[:, j])
+            else:
+                auprc = 0.0
+            boot_results[name]['auprc'].append(auprc)
+            
+    ci_results = {}
+    print("\n--- 95% Confidence Intervals (Test Set) ---")
+    
+    acc_ci = (np.percentile(boot_results['accuracy'], 2.5), np.percentile(boot_results['accuracy'], 97.5))
+    print(f"Accuracy: {np.mean(boot_results['accuracy']):.4f} [{acc_ci[0]:.4f} - {acc_ci[1]:.4f}]")
+    ci_results['accuracy'] = {'mean': float(np.mean(boot_results['accuracy'])), 'ci_lower': float(acc_ci[0]), 'ci_upper': float(acc_ci[1])}
+    
+    mf1_ci = (np.percentile(boot_results['macro_f1'], 2.5), np.percentile(boot_results['macro_f1'], 97.5))
+    print(f"Macro-F1: {np.mean(boot_results['macro_f1']):.4f} [{mf1_ci[0]:.4f} - {mf1_ci[1]:.4f}]")
+    ci_results['macro_f1'] = {'mean': float(np.mean(boot_results['macro_f1'])), 'ci_lower': float(mf1_ci[0]), 'ci_upper': float(mf1_ci[1])}
+    
+    for name in class_names:
+        ci_results[name] = {}
+        for metric in ['precision', 'recall', 'f1', 'auprc']:
+            mean_val = np.mean(boot_results[name][metric])
+            ci_lower = np.percentile(boot_results[name][metric], 2.5)
+            ci_upper = np.percentile(boot_results[name][metric], 97.5)
+            ci_results[name][metric] = {'mean': float(mean_val), 'ci_lower': float(ci_lower), 'ci_upper': float(ci_upper)}
+            if metric in ['recall', 'auprc']:
+                print(f"[{name}] {metric.upper():6s}: {mean_val:.4f} [{ci_lower:.4f} - {ci_upper:.4f}]")
+                
+    return ci_results
+
+
 def print_comparison(standard, calibrated, class_names):
     """Side-by-side comparison of standard vs calibrated metrics."""
     print(f"\n{'='*75}")
@@ -284,6 +340,9 @@ def main():
     for i, name in enumerate(CLASS_NAMES):
         print(f"  True:{name:8} {cm[i,0]:12d} {cm[i,1]:12d} {cm[i,2]:12d}")
 
+    # ---- STEP 6: Bootstrap Confidence Intervals & AUPRC ----
+    ci_results = compute_confidence_intervals(y_test_true, y_test_proba, thresholds, CLASS_NAMES, n_iterations=1000)
+
     # ---- Save results ----
     save_data = {
         'thresholds': thresholds,
@@ -292,6 +351,7 @@ def main():
         'validation_calibrated': val_calibrated,
         'test_standard': test_standard,
         'test_calibrated': test_calibrated,
+        'test_ci_95': ci_results,
         'confusion_matrix_calibrated': cm.tolist(),
     }
 

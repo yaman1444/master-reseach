@@ -106,29 +106,38 @@ for i, class_name in enumerate(CLASS_NAMES):
     class_dir = os.path.join(TEST_DIR, class_name)
     if not os.path.exists(class_dir): continue
     
-    # Pick the first image
-    img_name = os.listdir(class_dir)[0]
-    img_path = os.path.join(class_dir, img_name)
-    
-    # Prep image
-    img = cv2.imread(img_path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = cv2.resize(img, IMG_SIZE)
-    img_array = img.astype('float32') / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-    
-    # Predict
-    preds = model.predict(img_array, verbose=0)
-    pred_idx = np.argmax(preds[0])
-    pred_name = CLASS_NAMES[pred_idx]
-    prob = preds[0][pred_idx]
-    
-    # GradCAM
-    heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name)
-    
-    # Save
-    save_path = f"results/presentation/gradcam/7_gradcam_{class_name}.png"
-    save_gradcam_viz(img_path, heatmap, save_path, class_name, pred_name, prob)
-    print(f"✅ Grad-CAM géré pour {class_name} -> {save_path}")
+    # Iterate through images to find a very confident correct prediction
+    for img_name in os.listdir(class_dir):
+        if not img_name.endswith(('.png', '.jpg', '.jpeg')): continue
+        
+        img_path = os.path.join(class_dir, img_name)
+        
+        # Prep image
+        img = cv2.imread(img_path)
+        if img is None: continue
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        img = cv2.resize(img, IMG_SIZE)
+        img_array = img.astype('float32') / 255.0
+        img_array = np.expand_dims(img_array, axis=0)
+        
+        # Predict
+        preds = model.predict(img_array, verbose=0)
+        pred_idx = np.argmax(preds[0])
+        pred_name = CLASS_NAMES[pred_idx]
+        prob = preds[0][pred_idx]
+        
+        # Only accept if it's the correct class and highly confident (>0.90)
+        if pred_name == class_name and prob > 0.90:
+            # GradCAM
+            heatmap = make_gradcam_heatmap(img_array, model, last_conv_layer_name)
+            
+            # Save
+            save_path = f"results/presentation/gradcam/7_gradcam_{class_name}.png"
+            # save_path directly to memoir instead to make it easy
+            save_path_memoir = f"../memoir/7_gradcam_{class_name}.png"
+            save_gradcam_viz(img_path, heatmap, save_path_memoir, class_name, pred_name, prob)
+            print(f"✅ Grad-CAM généré pour {class_name} (Prob: {prob:.2f}) -> {save_path_memoir}")
+            break
+
 
 print("✅ Toutes les visualisations de présentation sont prêtes dans 'results/presentation/' !")
