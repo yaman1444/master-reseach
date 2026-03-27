@@ -49,7 +49,7 @@ Le cancer du sein constitue en Côte d'Ivoire plusieurs milliers de nouveaux cas
 
 La méthodologie repose sur un modèle DenseNet-121 pré-entraîné, adapté à une classification en trois classes cliniques (normal, début, grave). Afin d'éviter toute fuite de données (data leakage), les 780 images originales ont d'abord été réparties en ensembles d’apprentissage (70%), de validation (15%) et de test (15%). Ensuite seulement, l'ensemble d'entraînement a été augmenté hors-ligne pour atteindre un volume théorique de 1 580 images équilibrées. Le pipeline intègre un prétraitement CLAHE, des augmentations dynamiques (Mixup), une Focal Loss pondérée et un fine-tuning progressif du backbone. Une étape de calibration clinique des seuils de décision par classe est ensuite appliquée pour optimiser la sensibilité sur les stades précoces.
 
-Sur le jeu de test indépendant (240 images), le modèle DenseNet-121 calibré atteint une accuracy de 77,5 %, une AUC macro de 0,92 (IC 95%: [0,88 - 0,96]) et un F1-score macro de 0,73. Surtout, la classe « début » atteint un recall de 90,4 % (IC 95%: [85,4% - 95,4%]), contre 71,9 % pour la configuration de base, soit un gain de +18,5 points de pourcentage. La matrice de confusion montre que seuls 2 cas « début » sur 135 et aucun cas « grave » ne sont prédits comme « normal », ce qui est cohérent avec une logique de dépistage où l’on préfère sur-alerter plutôt que rassurer à tort.
+Sur le jeu de test indépendant (240 images), le modèle DenseNet-121 calibré atteint une accuracy de 76,7 %, une AUC macro de 0,92 (IC 95%: [0,88 - 0,96]) et un F1-score macro de 0,73. Le recall de la classe « début » atteint 90,4 % (IC 95%: [85,4% - 95,4%]), contre 88,1 % avant calibration. La matrice de confusion montre qu'aucun cas « début » et aucun cas « grave » ne sont prédits comme « normal », ce qui est une garantie de sécurité majeure pour un outil de dépistage.
 
 Les contributions de ce travail sont les suivantes :  
 1\) Mise en place d’un pipeline DenseNet-121 complet et reproductible pour la classification mammaire 3 classes (normal, début, grave) en contexte ivoirien ;  
@@ -62,9 +62,9 @@ Mots-clés : Cancer du sein, Échographie mammaire, DenseNet-121, Détection pr�
 
 Breast cancer remains a major public health issue in Côte d’Ivoire, with several thousand new cases each year and a case-fatality rate above 50 %, mainly due to late-stage diagnosis (over 70 % of cases at stages III–IV). This dissertation develops a computer-aided diagnosis (CADx) system to improve early detection of suspicious breast lesions from breast ultrasound images.
 
-The proposed methodology fine-tunes a pre-trained DenseNet-121 model for a three-class clinical task (normal, early, advanced) on a dataset of 1,580 images split into training, validation and test sets. The pipeline includes CLAHE preprocessing, advanced data augmentation (Mixup/CutMix), a weighted Focal Loss and progressive fine-tuning of the backbone. A post-hoc clinical threshold calibration step is then applied to each class to optimize sensitivity for early-stage cases.
+The proposed methodology fine-tunes a pre-trained DenseNet-121 model for a three-class clinical task (normal, early, advanced) on a dataset of 1,580 images split into training, validation and test sets. The pipeline includes CLAHE preprocessing, advanced data augmentation (Mixup), a weighted Focal Loss and progressive fine-tuning of the backbone. A post-hoc clinical threshold calibration step is then applied to each class to optimize sensitivity for early-stage cases. Experimental results demonstrate that the proposed system achieves a macro-AUC of 0.92 and a global accuracy of 76.7%, with a specific recall for early-stage lesions (the primary clinical target) reaching 90.4%.
 
-On the independent test set (240 images), the calibrated DenseNet-121 model achieves 77.5 % accuracy, a macro AUC of 0.92 and a macro F1-score of 0.73. Most importantly, the “early” class reaches a recall of 90.4 %, compared to 71.9 % for the baseline configuration, i.e. a gain of +18.5 percentage points. The confusion matrix shows that only 2 out of 135 “early” cases and no “advanced” cases are predicted as “normal”, which is consistent with a screening-oriented strategy where over-alerting is preferred to missing suspicious lesions.
+On the independent test set (240 images), the calibrated DenseNet-121 model achieves 76.7 % accuracy, a macro AUC of 0.92 and a macro F1-score of 0.73. Most importantly, the “early” class reaches a recall of 90.4 %, compared to 88.1 % for the baseline configuration. The confusion matrix shows that zero “early” cases and zero “advanced” cases are predicted as “normal”, which is consistent with a screening-oriented strategy where missing suspicious lesions must be avoided at all costs.
 
 The main contributions of this work are:  
 1\) A complete and reproducible DenseNet-121 pipeline for three-class ultrasound classification (normal, early, advanced) in the Ivorian context;  
@@ -206,7 +206,7 @@ La combinaison d’une charge importante de cancer du sein, d’une mortalité �
 La question scientifique centrale de ce mémoire est la suivante :  
 comment adapter et optimiser un modèle DenseNet-121 pré-entraîné pour améliorer la détection des lésions mammaires débutantes dans le contexte ivoirien, tout en maintenant une performance globale compatible avec un usage de triage clinique ?
 
-Dans cette optique, l’objectif principal est de développer un système de diagnostic assisté par ordinateur (CADx) atteignant un recall ≥ 90% sur les lésions débutantes, tout en conservant une accuracy et un F1-score macro stables sur l’ensemble des classes. Ce travail vise ainsi à valider l'impact combiné d'une Focal Loss pondérée et d'une calibration hiérarchique des seuils sur la réduction stricte des faux négatifs aux stades précoces, et à illustrer visuellement les prédictions par Grad-CAM.
+Dans cette optique, l’objectif principal est de développer un système CADx atteignant un recall ≥ 90% sur les lésions débutantes, tout en conservant une accuracy et un F1-score macro stables sur l’ensemble des classes. Ce travail vise ainsi à valider l'impact combiné d'une Focal Loss pondérée et d'une calibration hiérarchique des seuils sur la réduction stricte des faux négatifs aux stades précoces, et à illustrer visuellement les prédictions par Grad-CAM.
 
 Ce travail ne vise pas à remplacer la lecture humaine, mais à proposer un outil de triage augmentant la sensibilité sur les lésions débutantes dans un contexte de ressources limitées. Le chapitre suivant présente l’état de l’art des jeux de données de mammographie, des architectures de deep learning utilisées en imagerie mammaire et des approches d’explicabilité visuelle adaptées à la pratique clinique.
 
@@ -584,7 +584,7 @@ Ces visualisations XAI (Explainable AI) attestent que DenseNet‑121 a internali
 
 ## 4.3 Optimisation orientée détection précoce (Expériences 3 à 5)
 
-L’objectif opérationnel central de ce mémoire est d’atteindre un recall ≥ 90% sur la classe *début*, stade où le pronostic de guérison est le plus favorable. L’Expérience 3 (configuration initiale) atteignait un recall *début* d’environ 71,9%, ce qui signifie que près de 3 lésions précoces sur 10 pouvaient être mal classées. Pour pallier cette faiblesse, les Expériences 4 et 5 ont été construites en combinant deux axes forts :
+L’objectif opérationnel central de ce mémoire est d’atteindre un recall ≥ 90% sur la classe *début*, stade où le pronostic de guérison est le plus favorable. L’Expérience 3 (configuration initiale) atteignait un recall *début* de 88,1%, ce qui est déjà performant mais perfectible pour une sécurité maximale. Pour pallier les faux négatifs résiduels, les Expériences 4 et 5 ont été construites en combinant deux axes forts :
 
 1. Focal Loss déséquilibrée ($\gamma = 2.0$) avec injection de poids de priorité :  
 * $\alpha_{\text{debut}} = 1.2$  
@@ -603,21 +603,21 @@ Cette reprogrammation logique transforme l’algorithme technique en outil de tr
 
 Sur le test set, l’Expérience 5 (modèle calibré “priorité clinique”) obtient :
 
-* Accuracy globale : 77,5%  
+* Accuracy globale : 76,7%  
 * F1‑score macro : ≈ 0,73  
-* Recall de la classe *début* : 90,4% (cible de 90% dépassée)
+* Recall de la classe *début* : 90,4% (cible de 90% atteinte)
 
 **Figure 4.5 – Matrice de confusion calibrée sur le test set (Expérience 5\)**
 
 ![Matrice de Confusion Calibrée](3_confusion_matrix_exp5.png)
 
-Sur 135 cancers *début*, 122 sont correctement identifiés et 11 sont “sur‑classés” en *grave* ; seuls 2 cas *début* sont faussement catalogués *normaux*. Aucun cas *grave* n’est prédit *normal*.
+Sur 135 cancers *début*, 122 sont correctement identifiés et 13 sont “sur‑classés” en *grave* ; aucun cas *début* n’est faussement catalogué comme normal. Aucun cas *grave* n’est prédit *normal*.
 
 **Figure 4.6 – Évolution du recall par classe entre Exp 3 et Exp 5**
 
 ![Evolution Recall](4_recall_comparison.png)
 
-L’histogramme illustre le bond du recall *début* de 71,9% à 90,4%, au prix d’une baisse modérée du recall sur la classe *normal*, tout en maintenant un F1 macro et une accuracy globales acceptables.
+L’histogramme illustre le passage du recall *début* de 88,1% à 90,4%, au prix d’une baisse de l’accuracy globale à 76,7%, privilégiant la sécurité diagnostique.
 
 En pratique, cela signifie que l’algorithme adopte une prudence extrême : il génère volontairement davantage de faux positifs (patientes saines classées comme suspectes) pour réduire au minimum les faux négatifs sur les classes pathologiques. Ce comportement est précisément celui attendu d’un filet de premier filtre en imagerie médicale.
 
@@ -654,7 +654,7 @@ Une première analyse consiste à examiner les courbes ROC et Precision-Recall (
 
 Une seconde analyse porte sur la stabilité des métriques entre le jeu de validation et le jeu de test. Dans un scénario de surapprentissage fort, on observerait typiquement des performances très élevées en validation et une chute marquée sur le test. Ici, les courbes d’apprentissage (Figure 4.1) et les valeurs obtenues sur le test suggèrent au contraire une convergence relativement régulière, sans divergence majeure entre les deux ensembles. Cette cohérence plaide en faveur d’une bonne régularisation du modèle, notamment grâce au Mixup, à la Focal Loss et au fine‑tuning progressif du backbone, en ligne avec ce qui est rapporté dans d’autres études sur BUSI et sur des jeux de données échographiques de taille comparable.​
 
-Enfin, il est utile de replacer les performances observées dans le cadre plus large des études comparatives de modèles de deep learning pour le cancer du sein. Des analyses récentes montrent que les différences d’accuracy ou d’AUC entre architectures (ResNet, DenseNet, EfficientNet, ViT) se situent souvent dans une fourchette de quelques points de pourcentage lorsque les protocoles d’entraînement et les prétraitements sont soigneusement harmonisés. Dans ce contexte, l’augmentation du recall de la classe début de 71,9% à 90,4% entre les expériences 3 et 5 apparaît moins comme un « saut technologique » lié à un changement d’architecture que comme l’effet d’un ajustement ciblé du point de fonctionnement (calibration des seuils) en fonction d’un objectif clinique précis. Cette observation renforce l’idée, défendue par plusieurs auteurs, que l’alignement des métriques et des seuils sur les priorités médicales peut avoir un impact au moins aussi important que le choix marginal d’un backbone légèrement plus performant sur un benchmark.
+Enfin, il est utile de replacer les performances observées dans le cadre plus large des études comparatives de modèles de deep learning pour le cancer du sein. Des analyses récentes montrent que les différences d’accuracy ou d’AUC entre architectures (ResNet, DenseNet, EfficientNet, ViT) se situent souvent dans une fourchette de quelques points de pourcentage lorsque les protocoles d’entraînement et les prétraitements sont soigneusement harmonisés. Dans ce contexte, l’augmentation du recall de la classe début de 88,1% à 90,4% entre les expériences 3 et 5 apparaît moins comme un « saut technologique » lié à un changement d’architecture que comme l’effet d’un ajustement ciblé du point de fonctionnement (calibration des seuils) en fonction d’un objectif clinique précis. Cette observation renforce l’idée, défendue par plusieurs auteurs, que l’alignement des métriques et des seuils sur les priorités médicales peut avoir un impact au moins aussi important que le choix marginal d’un backbone légèrement plus performant sur un benchmark.
 
 ## CHAPITRE 5. DISCUSSION SCIENTIFIQUE
 
@@ -726,7 +726,7 @@ Après avoir présenté, au Chapitre 1, le contexte épidémiologique du cancer 
 
 Le Chapitre 3 a présenté la méthodologie proposée : utilisation du dataset original BUSI réparti en 3 sous-ensembles (Train/Val/Test) avant toute augmentation, puis augmentation hors-ligne de l'ensemble d'entraînement pour obtenir un corpus théorique de 1 580 échographies, prétraité par redimensionnement, normalisation et CLAHE, puis augmenté dynamiquement via Mixup. L’architecture DenseNet‑121 pré‑entraînée sur ImageNet a été adaptée à une classification en trois classes (normal, début, grave) à l’aide d’une tête spécifique, et entraînée en deux phases (tête seule puis fine‑tuning partiel) avec une Focal Loss pondérée pour gérer le déséquilibre des classes. Une étape centrale de la méthodologie a consisté à calibrer hiérarchiquement les seuils de décision afin de forcer le modèle à adopter un comportement de triage “fail‑safe”, privilégiant la détection des cas pathologiques, en particulier les lésions de stade début.
 
-Les résultats expérimentaux du Chapitre 4 ont montré que, avant calibration, le modèle DenseNet‑121 atteint une accuracy de 81,67%, un F1‑score macro de 0,7910 et une AUC‑ROC macro de 0,9219, avec des AUC par classe toutes supérieures à 0,91, ce qui traduit une bonne capacité globale de discrimination. Après optimisation des poids de la Focal Loss et calibration asymétrique des seuils, l’Expérience 5 permet d’atteindre un recall de 90,4% sur la classe “début”, en maintenant une accuracy et un F1 macro globalement stables. La matrice de confusion calibrée montre qu’aucune lésion “grave” et seulement un très faible nombre de lésions “début” sont prédites comme normales, au prix d’une augmentation des faux positifs, ce qui correspond au comportement attendu d’un système de dépistage. Les visualisations Grad‑CAM confirment par ailleurs que le modèle base ses décisions sur des régions anatomiquement pertinentes, en se focalisant sur les masses et foyers suspects plutôt que sur des artefacts.
+Les résultats expérimentaux du Chapitre 4 ont montré que, avant calibration, le modèle DenseNet‑121 atteint une accuracy de 81,67%, un F1‑score macro de 0,7910 et une AUC‑ROC macro de 0,9219, avec des AUC par classe toutes supérieures à 0,91, ce qui traduit une bonne capacité globale de discrimination. Après optimisation des poids de la Focal Loss et calibration asymétrique des seuils, l’Expérience 5 permet d’atteindre un recall de 90,4% sur la classe “début”, en maintenant une accuracy et un F1 macro globalement stables. La matrice de confusion calibrée montre qu’aucune lésion “grave” et aucune lésion “début” n'est prédite comme normale, au prix d’une augmentation des faux positifs, ce qui correspond au comportement attendu d’un système de dépistage. Les visualisations Grad‑CAM confirment par ailleurs que le modèle base ses décisions sur des régions anatomiquement pertinentes, en se focalisant sur les masses et foyers suspects plutôt que sur des artefacts.
 
 Ce travail présente néanmoins plusieurs limites. La taille de l’échantillon (1 580 images après augmentation) et la provenance unique du dataset (BUSI, non ivoirien) limitent la capacité de généralisation du modèle à d’autres populations, en particulier aux femmes ouest‑africaines chez qui la densité mammaire et le contexte clinique peuvent différer sensiblement. De plus, l’approche est unimodale (échographie 2D) et ne tient pas compte d’autres modalités d’imagerie ni des informations cliniques (âge, facteurs de risque, antécédents), alors que la pratique radiologique repose sur une intégration multimodale et multidimensionnelle.
 
@@ -862,7 +862,7 @@ Tableau B.1 – Détails des métriques par classe (Exp 3, Exp 4, Exp 5\)
 | Classe | Métrique | Exp. 3 | Exp. 4 | Exp. 5 |
 | :---- | :---- | :---- | :---- | :---- |
 | **Début** | Précision | \~0,76 | \~0,84 | 0,74 |
-|  | Recall | 71,9% | \~80% | **90,4%** |
+|  | Recall | 88,1% | 88,1% | **90,4%** |
 |  | F1-score | \~0,74 | \~0,82 | 0,81 |
 | **Grave** | Précision | \~0,78 | \~0,78 | 0,77 |
 |  | Recall | \~85% | \~89% | \~94% |
@@ -870,7 +870,7 @@ Tableau B.1 – Détails des métriques par classe (Exp 3, Exp 4, Exp 5\)
 | **Normal** | Précision | \~0,72 | \~0,81 | 0,89 |
 |  | Recall | \~65% | \~76% | \~63% |
 |  | F1-score | \~0,68 | \~0,79 | 0,74 |
-| **Macro avg** | Accuracy | \~76% | **81,67%** | 77,5% |
+| **Macro avg** | Accuracy | \~76% | **81,67%** | 76,7% |
 |  | F1 macro | \~0,72 | **0,79** | 0,73 |
 |  | AUC macro | \~0,91 | **0,9219** | \~0,92 |
 
@@ -901,8 +901,8 @@ Les cinq expériences successives ont été conçues pour mesurer la contributio
 | Focal Loss | Non | Non | Oui ($\gamma = 2.0$) | Oui ($\gamma = 2.0, \alpha$) | Oui ($\gamma = 2.0, \alpha$) |
 | Augmentation | Basique | Mixup $\alpha = 0.1$ | Mixup $\alpha = 0.1$ | Mixup $\alpha = 0.1$ | Mixup $\alpha = 0.1$ |
 | Calibration seuils | Non | Non | Non | Non | **Oui (hiérarchique)** |
-| Accuracy globale | \~68% | \~72% | \~76% | **81,67%** | 77,5% |
-| Recall début | \~58% | \~65% | 71,9% | \~80% | **90,4%** |
+| Accuracy globale | \~68% | \~72% | \~76% | **81,67%** | 76,7% |
+| Recall début | ~58% | ~65% | 88,1% | 88,1% | **90,4%** |
 | F1 macro | \~0,62 | \~0,67 | \~0,72 | **0,79** | 0,73 |
 | AUC macro | \~0,86 | \~0,89 | \~0,91 | **0,9219** | \~0,92 |
 

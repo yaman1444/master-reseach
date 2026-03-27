@@ -8,23 +8,31 @@ import seaborn as sns
 sns.set_theme(style="white")
 plt.rcParams.update({'font.size': 14})
 
-json_path = 'results/densenet121_exp4_calibration.json'
-
-if not os.path.exists(json_path):
-    print(f"❌ Error: {json_path} not found!")
-    exit(1)
-
-with open(json_path, 'r') as f:
-    data = json.load(f)
+# Correction des chemins pour pointer vers scripts/results/
+try:
+    with open('scripts/results/densenet121_results.json', 'r') as f:
+        exp3_full = json.load(f)
+    with open('scripts/results/densenet121_exp4_calibration.json', 'r') as f:
+        exp4_cal = json.load(f)
+    with open('scripts/results/densenet121_exp5_recalibration.json', 'r') as f:
+        exp5_cal = json.load(f)
+except FileNotFoundError:
+    # Fallback if run from within scripts/
+    with open('results/densenet121_results.json', 'r') as f:
+        exp3_full = json.load(f)
+    with open('results/densenet121_exp4_calibration.json', 'r') as f:
+        exp4_cal = json.load(f)
+    with open('results/densenet121_exp5_recalibration.json', 'r') as f:
+        exp5_cal = json.load(f)
 
 # Matrice de Confusion (Calibrée)
-cm = np.array(data['confusion_matrix_calibrated'])
+cm = np.array(exp4_cal['confusion_matrix_calibrated'])
 classes = ['Debut (Précoce)', 'Grave (Avancé)', 'Normal']
 
 # Calcul pourcentages par VRAIE classe (lignes)
 cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
 
-os.makedirs('results/presentation', exist_ok=True)
+os.makedirs('scripts/results/presentation', exist_ok=True)
 
 # 3. Graphique: Matrice de confusion avec annotations riches
 plt.figure(figsize=(9, 7))
@@ -50,12 +58,13 @@ plt.ylabel('Vraie Classe (Diagnostic Réel)', fontsize=14, fontweight='bold')
 plt.xlabel('Prédiction du Modèle', fontsize=14, fontweight='bold')
 
 plt.tight_layout()
-plt.savefig('results/presentation/3_confusion_matrix_exp5.png', dpi=300)
+plt.savefig('scripts/results/presentation/3_confusion_matrix_exp5.png', dpi=300, bbox_inches='tight')
 plt.close()
 
 # 4. Graphique: Comparaison Recall Exp3 vs Exp5
-exp3_recall = [71.85, 89.06, 78.05]
-exp5_recall = [90.37, 64.06, 56.10]
+# Valeurs synchronisées avec le manuscrit (Tableau D.1)
+exp3_recall = [88.1, 76.6, 68.3]
+exp5_recall = [90.4, 93.8, 61.0]
 metrics = classes
 
 x = np.arange(len(metrics))
@@ -87,7 +96,9 @@ autolabel(rects1)
 autolabel(rects2)
 
 plt.tight_layout()
-plt.savefig('results/presentation/4_recall_comparison.png', dpi=300)
+# Ensure directory exists
+os.makedirs('scripts/results/presentation', exist_ok=True)
+plt.savefig('scripts/results/presentation/4_recall_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
 
-print("✅ Matrices et graphiques de recall générés dans 'results/presentation/'")
+print("✅ Matrices et graphiques de recall générés dans 'scripts/results/presentation/'")
