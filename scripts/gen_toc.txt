@@ -1,8 +1,9 @@
 ## **TABLE DES MATIÈRES**
 
+- [CHAPITRE 1: CONTEXTE CLINIQUE ET ÉPIDÉMIOLOGIQUE](#chapitre-1-contexte-clinique-et-épidémiologique)
   - [1.1 Épidémiologie du cancer du sein en Côte d’Ivoire (GLOBOCAN 2022)](#11-épidémiologie-du-cancer-du-sein-en-côte-divoire-globocan-2022)
   - [1.2 Limites du screening actuel : 1 mammographe pour 1 million de femmes](#12-limites-du-screening-actuel-1-mammographe-pour-1-million-de-femmes)
-  - [1.3 Classification BI-RADS et microcalcifications DCIS](#13-classification-bi-rads-et-microcalcifications-dcis)
+  - [1.3 Classification BI-RADS et types de lésions (masses et kystes)](#13-classification-bi-rads-et-types-de-lésions-masses-et-kystes)
   - [1.4 Tissus mammaires denses et spécificités africaines](#14-tissus-mammaires-denses-et-spécificités-africaines)
   - [1.5 Politiques de santé publique et cadre institutionnel en Côte d'Ivoire](#15-politiques-de-santé-publique-et-cadre-institutionnel-en-côte-divoire)
   - [1.6 Problématique scientifique et rôle potentiel de l’IA](#16-problématique-scientifique-et-rôle-potentiel-de-lia)

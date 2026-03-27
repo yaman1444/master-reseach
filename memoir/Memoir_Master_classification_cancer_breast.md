@@ -73,7 +73,49 @@ The main contributions of this work are:
 
 ---
 
-**INTRODUCTION GÉNÉRALE ............................................. 10**
+## TABLE DES MATIÈRES
+
+- [REMERCIEMENTS](#remerciements)
+- [DÉDICACE](#dédicace)
+- [RÉSUMÉ (Français)](#résumé-français)
+- [ABSTRACT (English)](#abstract-english)
+- [INTRODUCTION GÉNÉRALE](#introduction-générale)
+- [CHAPITRE 1: CONTEXTE CLINIQUE ET ÉPIDÉMIOLOGIQUE](#chapitre-1-contexte-clinique-et-épidémiologique)
+  - [1.1 Épidémiologie du cancer du sein en Côte d’Ivoire (GLOBOCAN 2022)](#11-épidémiologie-du-cancer-du-sein-en-côte-divoire-globocan-2022)
+  - [1.2 Limites du screening actuel : 1 mammographe pour 1 million de femmes](#12-limites-du-screening-actuel-1-mammographe-pour-1-million-de-femmes)
+  - [1.3 Classification BI-RADS et types de lésions (masses et kystes)](#13-classification-bi-rads-et-types-de-lésions-masses-et-kystes)
+  - [1.4 Tissus mammaires denses et spécificités africaines](#14-tissus-mammaires-denses-et-spécificités-africaines)
+  - [1.5 Politiques de santé publique et cadre institutionnel en Côte d'Ivoire](#15-politiques-de-santé-publique-et-cadre-institutionnel-en-côte-divoire)
+  - [1.6 Problématique scientifique et rôle potentiel de l’IA](#16-problématique-scientifique-et-rôle-potentiel-de-lia)
+- [CHAPITRE 2 : ÉTAT DE L'ART](#chapitre-2)
+  - [2.1 Jeux de données pour le diagnostic du cancer du sein](#21-jeux-de-données-pour-le-diagnostic-du-cancer-du-sein)
+  - [2.2 Architectures de deep learning en imagerie mammaire](#22-architectures-de-deep-learning-en-imagerie-mammaire)
+  - [2.3 Déséquilibre de classes et métriques cliniques](#23-déséquilibre-de-classes-et-métriques-cliniques)
+  - [2.4 Explicabilité des modèles : Grad‑CAM en imagerie mammaire](#24-explicabilité-des-modèles-gradcam-en-imagerie-mammaire)
+- [CHAPITRE 3 : MÉTHODOLOGIE](#chapitre-3)
+  - [3.1 Pipeline de prétraitement : CLAHE et Mixup](#31-pipeline-de-prétraitement-clahe-et-mixup)
+    - [3.1.1 Normalisation et amélioration de contraste (CLAHE)](#311-normalisation-et-amélioration-de-contraste-clahe)
+    - [3.1.2 Augmentation de données : choix de Mixup](#312-augmentation-de-données-choix-de-mixup)
+  - [3.2 Architecture DenseNet‑121 et tête de classification](#32-architecture-densenet121-et-tête-de-classification)
+  - [3.3 Protocole d’entraînement avancé](#33-protocole-dentraînement-avancé)
+  - [3.4 Métriques cliniques et calibration asymétrique des seuils](#34-métriques-cliniques-et-calibration-asymétrique-des-seuils)
+  - [3.5 Reproductibilité : organisation du code](#35-reproductibilité-organisation-du-code-et-suivi-des-expériences)
+- [CHAPITRE 4 : RÉSULTATS EXPÉRIMENTAUX](#chapitre-4-résultats-expérimentaux)
+  - [4.1 Performance globale de DenseNet‑121](#41-performance-globale-de-densenet121-3-classes-avant-calibration)
+  - [4.2 Analyse Grad‑CAM](#42-analyse-gradcam-interprétabilité-des-prédictions)
+  - [4.3 Optimisation orientée détection précoce (Expériences 3 à 5)](#43-optimisation-orientée-détection-précoce-expériences-3-à-5)
+  - [4.4 Limites et biais liés au dataset](#44-limites-et-biais-liés-au-dataset-et-au-contexte-ivoirien)
+- [CHAPITRE 5 : DISCUSSION SCIENTIFIQUE](#chapitre-5-discussion-scientifique)
+  - [5.1 Comparaison aux travaux de l’état de l’art](#51-comparaison-aux-travaux-de-létat-de-lart)
+  - [5.2 Limites : taille d’échantillon](#52-limites-taille-déchantillon-et-biais-de-population)
+- [CONCLUSION GÉNÉRALE ET PERSPECTIVES](#conclusion-générale-et-perspectives)
+- [ANNEXES](#annexes)
+- [LISTE DES FIGURES](#liste-des-figures)
+- [LISTE DES TABLEAUX](#liste-des-tableaux)
+- [LISTE DES ABRÉVIATIONS](#liste-des-abréviations)
+---
+
+## INTRODUCTION GÉNÉRALE
 
 En Côte d'Ivoire, le cancer du sein représente plusieurs milliers de nouveaux cas par an avec un taux de mortalité supérieur à 50 %, le plus élevé d'Afrique de l'Ouest. En effet, cette mortalité exceptionnelle résulte d'un diagnostic tardif systématique : plus de 70 % des cas sont diagnostiqués aux stades III-IV, contre environ 30 % en Europe. 
 
@@ -99,7 +141,7 @@ Le mémoire s'articule ainsi :
 \- Le **Chapitre 4** expose les résultats expérimentaux, en particulier l’optimisation orientée détection précoce et l’analyse des matrices de confusion ;  
 \- Le **Chapitre 5** discute la portée clinique des résultats, les limites de l’étude et les perspectives de déploiement au CHU d’Abidjan et d’extension à d’autres architectures.
 
-                                   **CHAPITRE 1**
+## CHAPITRE 1: CONTEXTE CLINIQUE ET ÉPIDÉMIOLOGIQUE
 
 **CONTEXTE CLINIQUE EN CÔTE D’IVOIRE**
 
