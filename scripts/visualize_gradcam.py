@@ -53,6 +53,10 @@ class GradCAM:
             # Forward pass
             conv_outputs, predictions = self.grad_model(image)
             
+            # Ensure predictions is a tensor
+            if isinstance(predictions, list):
+                predictions = predictions[0]
+            
             # Get target class
             if class_idx is None:
                 class_idx = tf.argmax(predictions[0])

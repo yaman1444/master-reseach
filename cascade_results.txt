@@ -1,0 +1,21 @@
+Loading U-Net...
+Loading DenseNet from scripts/my_model.keras...
+
+=== Résultats de la Cascade U-Net + DenseNet ===
+              precision    recall  f1-score   support
+
+      normal       0.11      0.43      0.17        23
+       debut       0.38      0.12      0.19        72
+       grave       0.00      0.00      0.00        34
+
+    accuracy                           0.15       129
+   macro avg       0.16      0.19      0.12       129
+weighted avg       0.23      0.15      0.14       129
+
+Matrice de Confusion :
+[[10  5  8]
+ [60  9  3]
+ [24 10  0]]
+
+Accuracy globale: 0.1473
+F1-Score (macro): 0.1195

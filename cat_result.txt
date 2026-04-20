@@ -1,0 +1,36 @@
+
+================================================================================
+BREAST CANCER CLASSIFICATION DEMO
+================================================================================
+
+Loading model from scripts/my_model.keras...
+Loading image from random_cat.jpg...
+Predicting...
+Generating Grad-CAM...
+
+================================================================================
+PREDICTION RESULTS
+================================================================================
+
+Predicted Class: BENIGN
+Confidence: 98.36%
+
+Class Probabilities:
+  Benign: 98.36%
+  Malignant: 1.64%
+  Normal: 0.00%
+
+================================================================================
+
+Visualization saved to results/prediction_random_cat.jpg
+
+================================================================================
+CLINICAL INTERPRETATION
+================================================================================
+✓  HIGH CONFIDENCE benign prediction
+    Recommendation: Routine follow-up monitoring
+
+⚠️  DISCLAIMER: This is an AI-assisted tool for research purposes only.
+    All predictions must be verified by qualified medical professionals.
+================================================================================
+

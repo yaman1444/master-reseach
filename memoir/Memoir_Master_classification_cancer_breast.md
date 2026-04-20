@@ -1,7 +1,7 @@
 
 
 **RÉPUBLIQUE DE CÔTE D'IVOIRE**  
-**Université Virtuelle de Côte d'Ivoire \- Ministère de l'Enseignement Supérieur et de la Recherche Scientifique**
+**Université Virtuelle de Côte d'Ivoire**
 
                                      **MÉMOIRE**  
 Présenté pour l'obtention du diplôme de MASTER  
@@ -45,24 +45,24 @@ Ce travail vous est dédié.
 
                                   **RÉSUMÉ**
 
-Le cancer du sein constitue en Côte d'Ivoire plusieurs milliers de nouveaux cas annuels avec un taux de létalité supérieur à 50 %, principalement en raison d’un diagnostic tardif (stades III-IV dans plus de 70 % des cas). Ce mémoire développe un système de diagnostic assisté par ordinateur (CADx) visant à améliorer la détection précoce des lésions mammaires suspectes à partir d'échographies mammaires.
+**Contexte et Problématique :** Le cancer du sein constitue en Côte d'Ivoire un défi de santé publique majeur, avec plusieurs milliers de nouveaux cas annuels et un taux de létalité supérieur à 50 %. Cette forte mortalité est principalement due à un diagnostic tardif (stades III-IV dans plus de 70 % des cas) et à un déficit criant d'infrastructures de dépistage. Dans ce contexte, l'échographie mammaire s'impose comme un outil de première ligne. Cependant, la fatigue cognitive des praticiens et la difficulté de déceler les lésions précoces, particulièrement sur les tissus denses fréquents chez les patientes africaines, limitent l'efficacité du diagnostic.
 
-La méthodologie repose sur un modèle DenseNet-121 pré-entraîné, adapté à une classification en trois classes cliniques (normal, début, grave). Afin d'éviter toute fuite de données (data leakage), les 780 images originales ont d'abord été réparties en ensembles d’apprentissage (70%), de validation (15%) et de test (15%). Ensuite seulement, l'ensemble d'entraînement a été augmenté hors-ligne pour atteindre un volume théorique de 1 580 images équilibrées. Le pipeline intègre un prétraitement CLAHE, des augmentations dynamiques (Mixup), une Focal Loss pondérée et un fine-tuning progressif du backbone. Une étape de calibration clinique des seuils de décision par classe est ensuite appliquée pour optimiser la sensibilité sur les stades précoces.
+**Solution Proposée :** Ce mémoire développe un système de diagnostic assisté par ordinateur (CADx) adapté au contexte ivoirien, visant à améliorer la détection précoce des lésions mammaires suspectes. La méthodologie repose sur un modèle d'apprentissage profond DenseNet-121 pré-entraîné, affiné pour une classification en trois classes cliniques : normal, début, et grave. 
 
-Sur le jeu de test indépendant (240 images), le modèle DenseNet-121 calibré atteint une accuracy de 76,7 %, une AUC macro de 0,92 (IC 95%: [0,88 - 0,96]) et un F1-score macro de 0,73. Le recall de la classe « début » atteint 90,4 % (IC 95%: [85,4% - 95,4%]), contre 88,1 % avant calibration. La matrice de confusion montre qu'aucun cas « début » et aucun cas « grave » ne sont prédits comme « normal », ce qui est une garantie de sécurité majeure pour un outil de dépistage.
+Sur un jeu de test indépendant, le modèle calibré atteint une exactitude globale de 76,7 %, avec une aire sous la courbe macro de 0,92. Plus important encore, la sensibilité (rappel) pour la classe « début » atteint 90,4 %. Ce résultat est sécurisé par l'absence de prédictions de lésions de stade « début » ou « grave » classées par erreur comme « normal », offrant ainsi une sécurité diagnostique essentielle pour un outil de triage clinique en Côte d'Ivoire.
 
 Les contributions de ce travail sont les suivantes :  
-1\) Mise en place d’un pipeline DenseNet-121 complet et reproductible pour la classification mammaire 3 classes (normal, début, grave) en contexte ivoirien ;  
-2\) Conception d’une stratégie d’optimisation orientée détection précoce combinant Focal Loss pondérée et calibration hiérarchique des seuils ;  
-3\) Analyse détaillée du compromis entre sensibilité précoce et équilibre global des performances, en vue d’une utilisation en triage clinique.
+1) Mise en place d’un pipeline d'IA complet pour la classification mammaire en trois classes, spécifiquement réfléchi pour le contexte ivoirien ;  
+2) Conception d’une stratégie d’optimisation orientée détection précoce combinant fonction de perte spécifique (Focal Loss) et calibration hiérarchique des seuils ;  
+3) Analyse du compromis entre sensibilité précoce et équilibre global, crucial pour le dépistage.
 
-Perspectives : déploiement pilote en environnement hospitalier (CHU d’Abidjan), comparaison avec d’autres architectures récentes (EfficientNet, Vision Transformers) et extension à des bases de données multicentriques africaines.
+**Perspectives :** Déploiement pilote au sein d'un environnement hospitalier ivoirien (tel que le CHU d’Abidjan), la création d'une bio-banque de données ouest-africaines, ainsi que l'exploration de modèles de segmentation tels que le réseau U-Net, qui pourraient permettre d'isoler et de caractériser successivement les lésions en tenant compte de l'âge des patientes.
 
-Mots-clés : Cancer du sein, Échographie mammaire, DenseNet-121, Détection précoce, Focal Loss, Calibration de seuils, Côte d’Ivoire.
+**Mots-clés :** Cancer du sein, Échographie mammaire, DenseNet-121, Détection précoce, U-Net, Triage clinique, Côte d’Ivoire.
 
 Breast cancer remains a major public health issue in Côte d’Ivoire, with several thousand new cases each year and a case-fatality rate above 50 %, mainly due to late-stage diagnosis (over 70 % of cases at stages III–IV). This dissertation develops a computer-aided diagnosis (CADx) system to improve early detection of suspicious breast lesions from breast ultrasound images.
 
-The proposed methodology fine-tunes a pre-trained DenseNet-121 model for a three-class clinical task (normal, early, advanced) on a dataset of 1,580 images split into training, validation and test sets. The pipeline includes CLAHE preprocessing, advanced data augmentation (Mixup), a weighted Focal Loss and progressive fine-tuning of the backbone. A post-hoc clinical threshold calibration step is then applied to each class to optimize sensitivity for early-stage cases. Experimental results demonstrate that the proposed system achieves a macro-AUC of 0.92 and a global accuracy of 76.7%, with a specific recall for early-stage lesions (the primary clinical target) reaching 90.4%.
+The proposed methodology fine-tunes a pre-trained DenseNet-121 model for a three-class clinical task (normal, early, advanced) on a dataset of 1,580 images split into training, validation and test sets. The pipeline includes CLAHE preprocessing, advanced data augmentation (Mixup [10]), a weighted Focal Loss and progressive fine-tuning of the backbone. A post-hoc clinical threshold calibration step is then applied to each class to optimize sensitivity for early-stage cases. Experimental results demonstrate that the proposed system achieves a macro-AUC of 0.92 and a global accuracy of 76.7%, with a specific recall for early-stage lesions (the primary clinical target) reaching 90.4%.
 
 On the independent test set (240 images), the calibrated DenseNet-121 model achieves 76.7 % accuracy, a macro AUC of 0.92 and a macro F1-score of 0.73. Most importantly, the “early” class reaches a recall of 90.4 %, compared to 88.1 % for the baseline configuration. The confusion matrix shows that zero “early” cases and zero “advanced” cases are predicted as “normal”, which is consistent with a screening-oriented strategy where missing suspicious lesions must be avoided at all costs.
 
@@ -117,9 +117,9 @@ The main contributions of this work are:
 
 ## INTRODUCTION GÉNÉRALE
 
-En Côte d'Ivoire, le cancer du sein représente plusieurs milliers de nouveaux cas par an avec un taux de mortalité supérieur à 50 %, le plus élevé d'Afrique de l'Ouest. En effet, cette mortalité exceptionnelle résulte d'un diagnostic tardif systématique : plus de 70 % des cas sont diagnostiqués aux stades III-IV, contre environ 30 % en Europe. 
+En Côte d'Ivoire, le cancer du sein représente plusieurs milliers de nouveaux cas par an avec un taux de mortalité supérieur à 50 %, le plus élevé d'Afrique de l'Ouest [1]. En effet, cette mortalité exceptionnelle résulte d'un diagnostic tardif systématique : plus de 70 % des cas sont diagnostiqués aux stades III-IV, contre environ 30 % en Europe. 
 
-Plus précisément, la cause racine clinique repose sur un déficit majeur en infrastructures de dépistage : on compte environ 1 mammographe pour 1 million de femmes ivoiriennes (contre 1 pour 100 000 en France). Par conséquent, le dépistage radiologique actuel dépend énormément de l'interprétation manuelle. **Dans ce contexte de ressources limitées, l’échographie mammaire s’impose souvent comme la modalité de premier recours, étant plus accessible, moins coûteuse et exempte de rayonnements ionisants, ce qui justifie son utilisation centrale dans ce travail.** Le dépistage reste cependant limité par trois facteurs critiques :  
+Ce retard diagnostique s'explique principalement par un déficit majeur en infrastructures de dépistage : on compte environ 1 mammographe pour 1 million de femmes ivoiriennes, contre 1 pour 100 000 en France [2]. Par conséquent, le dépistage radiologique actuel dépend énormément de l'interprétation manuelle. **Dans ce contexte de ressources limitées, l’échographie mammaire s’impose souvent comme la modalité de premier recours, étant plus accessible, moins coûteuse et exempte de rayonnements ionisants, ce qui justifie son utilisation centrale dans ce travail.** Le dépistage reste cependant limité par trois facteurs critiques :  
 - la fatigue cognitive des radiologues (jusqu’à 200 examens par jour) ;  
 - la difficulté de détection des anomalies au stade précoce (sensibilité moyenne des radiologues ≈ 72 %) ;  
 - la forte prévalence de tissus mammaires denses (BI-RADS C/D) chez les femmes africaines (≈ 65 % vs 25 % chez les patientes caucasiennes).
@@ -147,9 +147,9 @@ Le mémoire s'articule ainsi :
 
 ## 1.1 Épidémiologie du cancer du sein en Côte d’Ivoire (GLOBOCAN 2022)
 
-![Charge du cancer du sein en Côte d'Ivoire (GLOBOCAN 2022)](1_1_epidemiologie.jpg)
+En Côte d'Ivoire, le cancer du sein est le cancer le plus fréquent chez la femme et représente la première cause de cancer féminin. Selon les estimations GLOBOCAN 2022 [1], on dénombre 3 869 nouveaux cas de cancer du sein chez la femme ivoirienne, soit 33,5% de l’ensemble des cancers féminins diagnostiqués en 2022\. Sur la même période, plus de 2 000 décès sont attribués au cancer du sein, ce qui reflète une létalité élevée par rapport aux pays à haut revenu.
 
-En Côte d'Ivoire, le cancer du sein est le cancer le plus fréquent chez la femme et représente la première cause de cancer féminin. Selon les estimations GLOBOCAN 2022, on dénombre 3 869 nouveaux cas de cancer du sein chez la femme ivoirienne, soit 33,5% de l’ensemble des cancers féminins diagnostiqués en 2022\. Sur la même période, plus de 2 000 décès sont attribués au cancer du sein, ce qui reflète une létalité élevée par rapport aux pays à haut revenu.
+![Charge du cancer du sein en Côte d'Ivoire (GLOBOCAN 2022)](1_1_epidemiologie.jpg)
 
 **Tableau 1.1 : Charge du cancer du sein chez la femme en Côte d’Ivoire (GLOBOCAN 2022\)**
 
@@ -164,9 +164,9 @@ Cette charge s’inscrit dans un contexte régional où le cancer du sein est é
 
 ## 1.2 Limites du screening actuel : 1 mammographe pour 1 million de femmes
 
-![Contraintes d'infrastructure de dépistage](1_2_infrastructures.jpg)
+Le dépistage organisé du cancer du sein n’est pas encore pleinement opérationnel en Côte d’Ivoire, et l’accès à la mammographie reste concentré dans quelques structures de référence, principalement à Abidjan. Plusieurs rapports insistent sur la faible disponibilité des équipements d’imagerie et sur le nombre limité de professionnels formés à l’imagerie mammaire. Dans la pratique, on estime qu’il n’existe que quelques mammographes fonctionnels à l’échelle nationale, soit un ordre de grandeur d’environ 1 mammographe pour 1 million de femmes, contre environ 1 pour 100 000 dans des pays comme la France [2]. **Cette pénurie structurelle fait de l’échographie mammaire l'outil de diagnostic de première ligne le plus répandu en Côte d'Ivoire, car elle est beaucoup plus disponible dans les centres de santé de second contact.**
 
-Le dépistage organisé du cancer du sein n’est pas encore pleinement opérationnel en Côte d’Ivoire, et l’accès à la mammographie reste concentré dans quelques structures de référence, principalement à Abidjan. Plusieurs rapports insistent sur la faible disponibilité des équipements d’imagerie et sur le nombre limité de professionnels formés à l’imagerie mammaire. Dans la pratique, on estime qu’il n’existe que quelques mammographes fonctionnels à l’échelle nationale, soit un ordre de grandeur d’environ 1 mammographe pour 1 million de femmes, contre environ 1 pour 100 000 dans des pays comme la France. **Cette pénurie structurelle fait de l’échographie mammaire l'outil de diagnostic de première ligne le plus répandu en Côte d'Ivoire, car elle est beaucoup plus disponible dans les centres de santé de second contact.**
+![Contraintes d'infrastructure de dépistage](1_2_infrastructures.jpg)
 
 **Tableau 1.2 : Contraintes infrastructurelles et organisationnelles en dépistage**
 
@@ -181,10 +181,10 @@ Dans la pratique, un radiologue peut être amené à interpréter de nombreuses 
 
 ## 1.3 Classification BI-RADS et types de lésions (masses et kystes)
 
+La lecture radiologique s’appuie sur le système BI-RADS (Breast Imaging Reporting and Data System) développé par l’American College of Radiology, qui standardise la description des anomalies pour la mammographie, l’échographie et l’IRM. Ce système associe chaque catégorie à une probabilité approximative de malignité. Dans ce travail, nous nous concentrons sur le **BI-RADS échographique**, dont les critères de forme, d'orientation et de contours sont essentiels pour la classification automatisée. Bien que les microcalcifications ductales (Ductal Carcinoma In Situ, DCIS) soient davantage un marqueur mammographique, l'échographie permet de caractériser avec une grande précision les masses solides et les kystes, stades pivots de la détection précoce.
+
 ![Illustration schématique de la classification BI-RADS](1_3_birads_microcalcifications.jpg)
 <!-- Figure BI-RADS : Schéma de la classification ACR à insérer par l'auteur (non-IA) -->
-
-La lecture radiologique s’appuie sur le système BI-RADS (Breast Imaging Reporting and Data System) développé par l’American College of Radiology, qui standardise la description des anomalies pour la mammographie, l’échographie et l’IRM. Ce système associe chaque catégorie à une probabilité approximative de malignité. Dans ce travail, nous nous concentrons sur le **BI-RADS échographique**, dont les critères de forme, d'orientation et de contours sont essentiels pour la classification automatisée. Bien que les microcalcifications ductales (Ductal Carcinoma In Situ, DCIS) soient davantage un marqueur mammographique, l'échographie permet de caractériser avec une grande précision les masses solides et les kystes, stades pivots de la détection précoce.
 
 **Tableau 1.3 : Classification BI-RADS et probabilité de malignité**
 
@@ -201,10 +201,10 @@ Plusieurs travaux montrent que, dans des conditions optimales, la mammographie p
 
 ## 1.4 Tissus mammaires denses et spécificités africaines
 
+La densité mammaire est un facteur clé qui influence à la fois le risque de cancer du sein et la performance de la mammographie. Des études menées en Afrique subsaharienne et sur des populations afro-descendantes montrent des profils de densité mammaire différents de ceux observés chez les patientes caucasiennes [18], avec souvent une proportion importante de femmes présentant des densités élevées (BI-RADS C/D) à âge comparable.
+
 ![Tissus mammaires denses (BI-RADS C et D)](1_4_tissus_denses.jpg)
 <!-- Figure : Comparaison des densités mammaires à insérer par l'auteur -->
-
-La densité mammaire est un facteur clé qui influence à la fois le risque de cancer du sein et la performance de la mammographie. Des études menées en Afrique subsaharienne et sur des populations afro-descendantes montrent des profils de densité mammaire différents de ceux observés chez les patientes caucasiennes, avec souvent une proportion importante de femmes présentant des densités élevées (BI-RADS C/D) à âge comparable.
 
 **Tableau 1.4 : Densité mammaire (BI-RADS) – tendances observées**
 
@@ -258,9 +258,9 @@ Ce travail ne vise pas à remplacer la lecture humaine, mais à proposer un outi
 
 ## 2.1 Jeux de données pour le diagnostic du cancer du sein
 
-![Exemples d'échographies mammaires (Dataset BUSI)](2_1_datasets_examples.jpg)
-
 L’analyse par intelligence artificielle du cancer du sein s’appuie sur plusieurs bases d’images publiques qui servent de référence pour entraîner et comparer les modèles. Les premières concernent la mammographie. Le dataset DDSM puis sa version nettoyée CBIS‑DDSM regroupent des mammographies sur film numérisées, annotées par des radiologues avec des informations sur les masses, les calcifications et le statut bénin/malin. Le dataset INbreast correspond, lui, à des mammographies numériques plein champ (FFDM) recueillies dans un centre du sein portugais (410 images, 115 cas) avec des annotations précises de divers types de lésions.
+
+![Exemples d'échographies mammaires (Dataset BUSI)](2_1_datasets_examples.jpg)
 
 En parallèle, des jeux de données se sont développés en échographie mammaire, modalité particulièrement pertinente dans les seins denses. Le Breast Ultrasound Images Dataset (BUSI) proposé par Al‑Dhabyani et al. (2020) est l’un des plus utilisés. Il contient 780 échographies mammaires réparties en trois classes : 437 images bénignes, 210 malignes et 133 normales, la plupart accompagnées de masques de segmentation de la lésion.
 
@@ -290,11 +290,11 @@ Dans ce mémoire, les données proviennent de la base publique BUSI (780 images 
 
 ## 2.2 Architectures de deep learning en imagerie mammaire
 
+Depuis une dizaine d’années, les réseaux de neurones convolutifs (CNN) ont profondément transformé l’analyse d’images médicales. Les premiers travaux en cancer du sein utilisaient des architectures génériques pré‑entraînées sur ImageNet (AlexNet, VGG, ResNet) puis adaptées à la mammographie ou à l’échographie par transfert d’apprentissage. Ces modèles permettent déjà d’atteindre des AUC supérieures à 0,90 pour la classification bénin/malin sur des jeux de données comme CBIS‑DDSM, INbreast ou BUSI.
+
 ![Schéma simplifié de l'architecture DenseNet-121](2_2_densenet_architecture.jpg)
 ![Illustration des connexions denses](2_3_denseblock.jpg)
 <!-- Figure : Architecture DenseBlock (Huang et al., 2017) à insérer par l'auteur -->
-
-Depuis une dizaine d’années, les réseaux de neurones convolutifs (CNN) ont profondément transformé l’analyse d’images médicales. Les premiers travaux en cancer du sein utilisaient des architectures génériques pré‑entraînées sur ImageNet (AlexNet, VGG, ResNet) puis adaptées à la mammographie ou à l’échographie par transfert d’apprentissage. Ces modèles permettent déjà d’atteindre des AUC supérieures à 0,90 pour la classification bénin/malin sur des jeux de données comme CBIS‑DDSM, INbreast ou BUSI.
 
 Des architectures plus récentes se distinguent particulièrement en imagerie mammaire : les réseaux résiduels ResNet, les réseaux à connexions denses DenseNet, la famille EfficientNet basée sur un “compound scaling” de la profondeur, de la largeur et de la résolution, ainsi que les Vision Transformers (ViT) ou modèles hybrides CNN–Transformer qui exploitent des mécanismes d’attention globale.
 
@@ -320,7 +320,7 @@ Les jeux de données médicaux présentent souvent un déséquilibre de classes,
 Pour atténuer ces effets, plusieurs techniques sont décrites dans la littérature :
 
 * Pondération de la fonction de coût / Focal Loss : la Focal Loss modifie la cross‑entropy en réduisant le poids des exemples faciles et en renforçant celui des exemples difficiles, améliorant ainsi l’apprentissage des classes minoritaires.  
-* Ré‑échantillonnage (oversampling des classes rares, undersampling des classes majoritaires) et augmentation de données ciblée (rotations, flips, Mixup, CutMix) pour présenter un volume plus équilibré d’images pendant l’entraînement.  
+* Ré‑échantillonnage (oversampling des classes rares, undersampling des classes majoritaires) et augmentation de données ciblée (rotations, flips, Mixup, CutMix [11]) pour présenter un volume plus équilibré d’images pendant l’entraînement.  
 * Choix de métriques adaptées, comme le recall, le F1‑score par classe, la macro‑moyenne et l’AUC, pour mieux refléter la performance réelle sur chaque classe.​
 
 **Tableau 2.4 – Stratégies de gestion du déséquilibre des classes**
@@ -336,10 +336,10 @@ En contexte de dépistage, de nombreux travaux insistent sur la nécessité de p
 
 ## 2.4 Explicabilité des modèles : Grad‑CAM en imagerie mammaire
 
+L’acceptation clinique des modèles de deep learning repose aussi sur leur explicabilité. Les radiologues souhaitent comprendre sur quelles régions de l’image le modèle se base pour prédire une classe donnée. Parmi les approches d’Explainable AI (XAI), Grad‑CAM (Gradient‑weighted Class Activation Mapping) [6] est l’une des plus utilisées pour les CNN de classification. Elle produit, pour une classe cible, une carte de chaleur obtenue en combinant les gradients de cette classe avec les cartes de caractéristiques d’une couche convolutionnelle profonde.​
+
 ![Visualisation Grad-CAM en imagerie mammaire](2_4_gradcam_example.jpg)
 <!-- Figure : Principe de Grad-CAM à insérer par l'auteur -->
-
-L’acceptation clinique des modèles de deep learning repose aussi sur leur explicabilité. Les radiologues souhaitent comprendre sur quelles régions de l’image le modèle se base pour prédire une classe donnée. Parmi les approches d’Explainable AI (XAI), Grad‑CAM (Gradient‑weighted Class Activation Mapping) est l’une des plus utilisées pour les CNN de classification. Elle produit, pour une classe cible, une carte de chaleur obtenue en combinant les gradients de cette classe avec les cartes de caractéristiques d’une couche convolutionnelle profonde.​
 
 En imagerie du sein (mammographie, échographie), Grad‑CAM est employé pour vérifier que les activations se concentrent sur les lésions (masses, microcalcifications) plutôt que sur des artefacts ou des éléments hors sein, et pour analyser les erreurs du modèle (faux positifs et faux négatifs). Des variantes comme Grad‑CAM++ ou des méthodes basées sur les valeurs de Shapley (SHAP) ont été proposées pour affiner encore cette interprétation.
 
@@ -398,10 +398,10 @@ Contrairement à une égalisation d’histogramme globale, CLAHE limite l’ampl
 
 Pour régulariser le modèle et réduire l’overfitting, une stratégie d’augmentation de données est mise en place. Deux approches ont été testées :
 
-* CutMix (découpage/collage de patchs d’images)  
+* CutMix [11] (découpage/collage de patchs d’images)  
 * Mixup (combinaison linéaire d’images et de labels)
 
-Les essais préliminaires ont montré que CutMix détériore la morphologie spatiale des lésions (spiculations, bords, forme globale), ce qui est problématique pour distinguer un cancer *debut* d’un cancer *grave*. Le pipeline final conserve donc uniquement Mixup avec :
+Les essais préliminaires ont montré que CutMix [11] détériore la morphologie spatiale des lésions (spiculations, bords, forme globale), ce qui est problématique pour distinguer un cancer *debut* d’un cancer *grave*. Le pipeline final conserve donc uniquement Mixup avec :
 
 * paramètre $\alpha = 0.1$
 * probabilité d'application $p = 0.5$
@@ -416,7 +416,7 @@ De même, l’augmentation par Mixup ne doit pas s’éloigner excessivement de 
 
 ## 3.2 Architecture DenseNet‑121 et tête de classification
 
-L’architecture choisie est DenseNet‑121 pré‑entraînée sur ImageNet, utilisée comme backbone d’extraction de caractéristiques.
+L’architecture choisie est DenseNet‑121 [4] pré‑entraînée sur ImageNet, utilisée comme backbone d’extraction de caractéristiques.
 
 ## 3.2.1 Intérêt des blocs denses en échographie
 
@@ -458,11 +458,11 @@ Cette approche progressive limite les risques d’overfitting sur un dataset de 
 
 ## 3.3.2 Focal Loss pondérée et priorités cliniques
 
-La fonction de coût standard en classification multi-classes est la cross-entropy catégorielle, définie pour un exemple $(x_i, y_i)$ par :
-$$ L_{CE}(p_t) = -\log(p_t) $$
-où $p_t$ désigne la probabilité prédite pour la classe réelle $y_i$. Cette formulation traite de manière identique les exemples faciles (bien classés, forte confiance) et les exemples difficiles (incertains ou mal classés), ce qui la rend inadaptée en présence d'un déséquilibre de classes. La Focal Loss, introduite par Lin et al. (2017), modifie ce comportement en ajoutant un facteur de modulation dynamique :
-$$ L_{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t) $$
-où $\gamma = 2.0$ est le paramètre de focalisation et $\alpha_t$ le poids de classe. Lorsque le modèle est très confiant ($p_t = 0.9$), le facteur $(1 - 0.9)^2 = 0.01$ réduit la perte à $1\%$ de sa valeur standard. Pour un exemple difficile ($p_t = 0.3$), ce facteur vaut $(0.7)^2 = 0.49$, maintenant une forte pression d'apprentissage sur les cas ambigus notamment les lésions débutantes.
+La fonction de coût standard en classification multi-classes est la cross-entropy catégorielle, définie pour un exemple (x_i, y_i) par :
+L_CE(p_t) = -log(p_t)
+où p_t désigne la probabilité prédite pour la classe réelle y_i. Cette formulation traite de manière identique les exemples faciles (bien classés, forte confiance) et les exemples difficiles (incertains ou mal classés), ce qui la rend inadaptée en présence d'un déséquilibre de classes. La Focal Loss, introduite par Lin et al. (2017) [5], modifie ce comportement en ajoutant un facteur de modulation dynamique :
+L_FL(p_t) = - alpha_t * (1 - p_t)^gamma * log(p_t)
+où gamma = 2.0 est le paramètre de focalisation et alpha_t le poids de classe. Lorsque le modèle est très confiant (p_t = 0.9), le facteur (1 - 0.9)^2 = 0.01 réduit la perte à 1 % de sa valeur standard. Pour un exemple difficile (p_t = 0.3), ce facteur vaut (0.7)^2 = 0.49, maintenant une forte pression d'apprentissage sur les cas ambigus notamment les lésions débutantes.
 
 La distribution des classes (majorité *debut*, minorité *normal*) rend la cross-entropy standard insuffisante. Une Focal Loss catégorielle personnalisée est donc implémentée, inspirée de Lin et al. (2017) :
 
@@ -542,7 +542,7 @@ Concrètement, la méthodologie développée dans ce mémoire repose sur un pipe
 
 <!-- Figure : Schéma du pipeline technique de prétraitement à insérer par l'auteur -->
 
-Lors de l'apprentissage, une augmentation dynamique contrôlée supplémentaire (Mixup, alpha = 0,1) a été utilisée afin d’augmenter la diversité. Le modèle s’appuie sur un DenseNet‑121 pré‑entraîné sur ImageNet, utilisé comme extracteur de caractéristiques, surmonté d’une tête de classification adaptée à trois classes (GAP, Dense(512, ReLU), Dropout(0,3), Dense(3, softmax)). L’apprentissage est réalisé en deux phases : d’abord l’entraînement de la tête de classification avec le backbone gelé, puis un fine‑tuning conservateur des couches supérieures de DenseNet avec un faible taux d’apprentissage. Pour gérer le déséquilibre et refléter les priorités cliniques, une Focal Loss pondérée est utilisée (gamma = 2, poids de classes ajustés). Enfin, une calibration hiérarchique des seuils de décision est appliquée en post‑entraînement pour imposer une logique “fail‑safe” (grave > début > normal), garantissant la reproductibilité avec la gestion des seeds.
+Lors de l'apprentissage, une augmentation dynamique contrôlée supplémentaire (Mixup [10], alpha = 0,1) a été utilisée afin d’augmenter la diversité. Le modèle s’appuie sur un DenseNet‑121 pré‑entraîné sur ImageNet, utilisé comme extracteur de caractéristiques, surmonté d’une tête de classification adaptée à trois classes (GAP, Dense(512, ReLU), Dropout(0,3), Dense(3, softmax)). L’apprentissage est réalisé en deux phases : d’abord l’entraînement de la tête de classification avec le backbone gelé, puis un fine‑tuning conservateur des couches supérieures de DenseNet avec un faible taux d’apprentissage. Pour gérer le déséquilibre et refléter les priorités cliniques, une Focal Loss pondérée est utilisée (gamma = 2, poids de classes ajustés). Enfin, une calibration hiérarchique des seuils de décision est appliquée en post‑entraînement pour imposer une logique “fail‑safe” (grave > début > normal), garantissant la reproductibilité avec la gestion des seeds.
 
 ## 3.7 Rappel des métriques d’évaluation
 
@@ -582,17 +582,17 @@ Ces résultats montrent une puissante capacité de généralisation sur les troi
 
 **Figure 3.5 – Historique d’entraînement de DenseNet‑121 (loss, accuracy, AUC)**
 
+Cette figure illustre la convergence de la loss et la stabilisation de l’AUC sur les ensembles d’entraînement et de validation. Les courbes démontrent l’absence de surapprentissage marqué grâce à la régularisation par Mixup et au fine‑tuning progressif.
+
 ![Courbe de Perte de l'Entraînement](7_training_loss.png)
 
 ![Courbe AUC de l'Entraînement](7_training_auc.png)
 
-Cette figure illustre la convergence de la loss et la stabilisation de l’AUC sur les ensembles d’entraînement et de validation. Les courbes démontrent l’absence de surapprentissage marqué grâce à la régularisation par Mixup et au fine‑tuning progressif.
-
 **Figure 4.1 – Matrice de confusion de DenseNet‑121 sur le jeu de test (avant calibration)**
 
-![Matrice de Confusion (Avant Calibration)](2_confusion_matrix_exp3.png)
-
 La matrice met en évidence des confusions résiduelles entre les classes pathologiques (*début* et *grave*) et un nombre encore non négligeable de faux négatifs (cas pathologiques prédits *normaux*), ce qui reste problématique pour un usage de triage médical.
+
+![Matrice de Confusion (Avant Calibration)](2_confusion_matrix_exp3.png)
 
 ## 4.2 Analyse Grad‑CAM : interprétabilité des prédictions
 
@@ -606,21 +606,21 @@ Les visualisations obtenues montrent que :
 
 **Figure 4.2 – Exemple de Grad‑CAM pour une lésion de stade grave**
 
-![Grad-CAM Lésion Grave](7_gradcam_grave.png)
-
 La carte de chaleur recouvre la masse complète et ses bords, confirmant que le modèle fonde sa décision sur la morphologie tumorale.
+
+![Grad-CAM Lésion Grave](7_gradcam_grave.png)
 
 **Figure 4.3 – Exemple de Grad‑CAM pour un sein normal**
 
-![Grad-CAM Sein Normal](7_gradcam_normal.png)
-
 L’activation nuageuse et étendue traduit l’absence de zone d’intérêt suspecte identifiée, ce qui est cohérent avec une image normale.
+
+![Grad-CAM Sein Normal](7_gradcam_normal.png)
 
 **Figure 4.4 – Exemple de Grad‑CAM pour une lésion de stade début**
 
-![Grad-CAM Lésion Début](7_gradcam_debut.png)
-
 Le réseau cible un nodule architectural discret, illustrant sa capacité à se focaliser sur des anomalies précoces difficiles à percevoir à l’œil nu.
+
+![Grad-CAM Lésion Début](7_gradcam_debut.png)
 
 Ces visualisations XAI (Explainable AI) attestent que DenseNet‑121 a internalisé des “règles métiers” compatibles avec la pratique radiologique rigoureuse, ce qui renforce la confiance dans son utilisation comme outil d’aide au dépistage.
 
@@ -651,15 +651,15 @@ Sur le test set, l’Expérience 5 (modèle calibré “priorité clinique”) o
 
 **Figure 4.5 – Matrice de confusion calibrée sur le test set (Expérience 5\)**
 
-![Matrice de Confusion Calibrée](3_confusion_matrix_exp5.png)
-
 Sur 135 cancers *début*, 122 sont correctement identifiés et 13 sont “sur‑classés” en *grave* ; aucun cas *début* n’est faussement catalogué comme normal. Aucun cas *grave* n’est prédit *normal*.
+
+![Matrice de Confusion Calibrée](3_confusion_matrix_exp5.png)
 
 **Figure 4.6 – Évolution du recall par classe entre Exp 3 et Exp 5**
 
-![Evolution Recall](4_recall_comparison.png)
-
 L’histogramme illustre le passage du recall *début* de 88,1% à 90,4%, au prix d’une baisse de l’accuracy globale à 76,7%, privilégiant la sécurité diagnostique.
+
+![Evolution Recall](4_recall_comparison.png)
 
 En pratique, cela signifie que l’algorithme adopte une prudence extrême : il génère volontairement davantage de faux positifs (patientes saines classées comme suspectes) pour réduire au minimum les faux négatifs sur les classes pathologiques. Ce comportement est précisément celui attendu d’un filet de premier filtre en imagerie médicale.
 
@@ -720,19 +720,33 @@ Enfin, le modèle développé est unimodal (échographie 2D seule) et ne tient p
 
 ---
 
-## 5.3 Perspectives : déploiement au CHU d’Abidjan et nouvelles architectures
+## 5.3 Perspectives : Segmentation U-Net, Cascade et Déploiement Clinique
 
-Plusieurs pistes de travail se dégagent pour prolonger ce mémoire et aller vers un déploiement progressif dans un environnement comme le CHU d’Abidjan.
+Plusieurs pistes de travail se dégagent pour prolonger ce mémoire et aller vers un déploiement progressif dans un environnement clinique comme le CHU d’Abidjan. L'une des perspectives les plus prometteuses, testée de manière préliminaire à l'issue de ce travail, est **l'intégration d'un modèle de segmentation U-Net en cascade avec notre classifieur DenseNet-121**.
 
-Sur le plan des données, la priorité est la constitution d’une base de données locale d’échographies mammaires annotées, idéalement multi‑centre (CHU et cliniques privées), couvrant la diversité des appareils, des protocoles d’acquisition et des profils anatomiques ivoiriens. Cette bio‑banque permettrait de réentraîner ou affiner le modèle DenseNet‑121 sur des données représentatives de la population cible, voire de constituer un dataset panafricain susceptible d’être partagé pour la recherche.
+### 5.3.1 Architecture en cascade (U-Net + DenseNet) : Expérimentation Pratique
 
-Sur le plan des architectures, plusieurs évolutions sont envisageables :
+Actuellement, le modèle DenseNet-121 traite l'échographie entière. Cependant, en contexte clinique, les radiologues fondent leur diagnostic sur des critères BI-RADS précis liés à la forme de la lésion (contours spiculés, orientation, etc.). Afin d'isoler la lésion du bruit de fond (tissus sains, ombres acoustiques), nous avons développé et testé un pipeline en deux étapes :
+1. **Étape de Segmentation (U-Net) :** Un réseau U-Net génère un masque binaire détourant la tumeur au pixel près.
+2. **Étape de Classification (DenseNet-121) :** Le masque est utilisé pour extraire la zone d'intérêt (soit par recadrage, soit par masquage du fond) avant de la transmettre au DenseNet pour la classification finale (normal, début, grave).
 
-* explorer des modèles multimodaux combinant échographie et mammographie, voire des données tabulaires (âge, antécédents, facteurs de risque) dans un réseau joint (par exemple CNN \+ MLP ou Transformers multimodaux) ;  
-* tester des architectures récentes plus légères et adaptées au déploiement sur matériel contraint (EfficientNet, MobileNet, Transformers compacts), tout en comparant systématiquement leur AUC et leur recall sur la classe *début* à DenseNet‑121 ;  
-* intégrer des techniques avancées d’explicabilité (Grad‑CAM amélioré, variantes hiérarchiques) pour fournir des explications plus fines et standardisées aux radiologues.
+**Résultats de l'expérimentation :**
+Un test pratique rapide a été implémenté en masquant le fond de l'image (mise en noir de tout ce qui n'est pas la tumeur). Les résultats immédiats sur DenseNet (entraîné originellement sur des images entières) ont montré une forte chute de l'accuracy (environ 15%). Ce comportement est scientifiquement cohérent et riche en enseignements :
+* **Biais de contexte global :** Il démontre que le DenseNet actuel s'appuie fortement sur la texture globale du parenchyme mammaire (le fond) pour prédire la classe, et pas uniquement sur la tumeur elle-même.
+* **Nécessité d'un ré-entraînement conjoint :** Pour qu'une architecture en cascade soit performante, il est impératif de **ré-entraîner entièrement le modèle DenseNet-121 sur les images détourées (masquées par U-Net)**. Ainsi, le classifieur apprendra à n'extraire que les caractéristiques intrinsèques de la tumeur (bordures, spiculation interne) sans dépendre du contexte global.
 
-Du point de vue du déploiement, une approche réaliste serait de mettre en place, dans un premier temps, un projet pilote au sein d’un service de radiologie d’Abidjan, où le modèle serait utilisé en double lecture : l’IA ne remplace pas le radiologue, mais signale les cas à haut risque (priorité à la classe *début*), avec un suivi prospectif des performances réelles. À terme, ce type d’outil pourrait contribuer à réduire les délais de dépistage, à prioriser les cas urgents et à soulager partiellement la charge des spécialistes, à condition d’être continuellement ré‑entraîné et évalué sur des données locales.Dans cette perspective, un plan de déploiement progressif spécifique au CHU d’Abidjan peut être envisagé, structuré en plusieurs phases successives, comme détaillé dans la section suivante.
+### 5.3.2 L'apport de U-Net face aux spécificités ivoiriennes (Âge et Densité)
+
+L'utilisation d'un U-Net ouvre également une voie majeure pour adresser le défi des tissus mammaires denses, très fréquents chez les patientes ivoiriennes jeunes. Un modèle de segmentation permet de :
+* **Calculer automatiquement les caractéristiques morphologiques :** Taille exacte en cm², orientation (parallèle ou non-parallèle), et régularité des marges. Ces paramètres extraits mathématiquement offrent une explicabilité totale au médecin.
+* **Isoler l'effet de l'âge :** En séparant la lésion du tissu fibro-glandulaire dense environnant, le système réduit considérablement les faux positifs chez les patientes jeunes.
+* **Suivi longitudinal :** U-Net permettrait de mesurer objectivement l'évolution du volume tumoral d'une patiente sous chimiothérapie néo-adjuvante mois après mois.
+
+### 5.3.3 Plan de déploiement progressif au CHU d’Abidjan
+
+Sur le plan des données, la priorité est la constitution d’une base de données locale d’échographies mammaires annotées (idéalement avec des masques de segmentation validés par des radiologues), couvrant la diversité des appareils et des profils anatomiques ivoiriens. 
+
+Du point de vue du déploiement, une approche réaliste s'organiserait en double lecture : l’IA ne remplace pas le radiologue, mais agit comme un "filet de sécurité". Le système U-Net détoure la lésion, extrait les mesures, et DenseNet propose un score de risque. Les cas signalés "début" ou "grave" par le modèle sont priorisés dans la file de relecture du médecin, réduisant ainsi les délais de prise en charge pour les patientes à haut risque.
 
 **5.3.1 Plan de déploiement pilote au CHU d’Abidjan**
 
@@ -766,7 +780,7 @@ Le cancer du sein reste une cause majeure de mortalité chez la femme, en partic
 
 Après avoir présenté, au Chapitre 1, le contexte épidémiologique du cancer du sein et la problématique spécifique de la détection précoce, le Chapitre 2 a dressé un état de l’art des principaux jeux de données, architectures de deep learning, stratégies de gestion du déséquilibre et méthodes d’explicabilité utilisées en imagerie mammaire. Les travaux existants montrent des performances souvent élevées en classification binaire bénin/malin sur des bases comme CBIS‑DDSM ou BUSI, mais traitent rarement un scénario à trois classes cliniques en priorisant explicitement la sensibilité sur les lésions débutantes.
 
-Le Chapitre 3 a présenté la méthodologie proposée : utilisation du dataset original BUSI réparti en 3 sous-ensembles (Train/Val/Test) avant toute augmentation, puis augmentation hors-ligne de l'ensemble d'entraînement pour obtenir un corpus théorique de 1 580 échographies, prétraité par redimensionnement, normalisation et CLAHE, puis augmenté dynamiquement via Mixup. L’architecture DenseNet‑121 pré‑entraînée sur ImageNet a été adaptée à une classification en trois classes (normal, début, grave) à l’aide d’une tête spécifique, et entraînée en deux phases (tête seule puis fine‑tuning partiel) avec une Focal Loss pondérée pour gérer le déséquilibre des classes. Une étape centrale de la méthodologie a consisté à calibrer hiérarchiquement les seuils de décision afin de forcer le modèle à adopter un comportement de triage “fail‑safe”, privilégiant la détection des cas pathologiques, en particulier les lésions de stade début.
+Le Chapitre 3 a présenté la méthodologie proposée : utilisation du dataset original BUSI réparti en 3 sous-ensembles (Train/Val/Test) avant toute augmentation, puis augmentation hors-ligne de l'ensemble d'entraînement pour obtenir un corpus théorique de 1 580 échographies, prétraité par redimensionnement, normalisation et CLAHE, puis augmenté dynamiquement via Mixup. L’architecture DenseNet‑121 [4] pré‑entraînée sur ImageNet a été adaptée à une classification en trois classes (normal, début, grave) à l’aide d’une tête spécifique, et entraînée en deux phases (tête seule puis fine‑tuning partiel) avec une Focal Loss pondérée pour gérer le déséquilibre des classes. Une étape centrale de la méthodologie a consisté à calibrer hiérarchiquement les seuils de décision afin de forcer le modèle à adopter un comportement de triage “fail‑safe”, privilégiant la détection des cas pathologiques, en particulier les lésions de stade début.
 
 Les résultats expérimentaux du Chapitre 4 ont montré que, avant calibration, le modèle DenseNet‑121 atteint une accuracy de 81,67%, un F1‑score macro de 0,7910 et une AUC‑ROC macro de 0,9219, avec des AUC par classe toutes supérieures à 0,91, ce qui traduit une bonne capacité globale de discrimination. Après optimisation des poids de la Focal Loss et calibration asymétrique des seuils, l’Expérience 5 permet d’atteindre un recall de 90,4% sur la classe “début”, en maintenant une accuracy et un F1 macro globalement stables. La matrice de confusion calibrée montre qu’aucune lésion “grave” et aucune lésion “début” n'est prédite comme normale, au prix d’une augmentation des faux positifs, ce qui correspond au comportement attendu d’un système de dépistage. Les visualisations Grad‑CAM confirment par ailleurs que le modèle base ses décisions sur des régions anatomiquement pertinentes, en se focalisant sur les masses et foyers suspects plutôt que sur des artefacts.
 
@@ -782,91 +796,51 @@ Il est important de souligner que la valeur de ce travail ne se mesure pas uniqu
 
 En résumé, ce mémoire montre qu’un modèle DenseNet‑121 correctement adapté, pondéré et calibré peut atteindre une sensibilité élevée pour les lésions mammaires précoces à partir d’images d’échographie, tout en offrant des explications visuelles compréhensibles par les cliniciens. Il ne s’agit pas d’un outil prêt à remplacer le radiologue, mais d’un premier pas vers un système de triage automatisé, pensé dès l’origine pour s’intégrer dans le contexte clinique ivoirien et servir de base à de futurs développements plus larges, multimodaux et multi‑centriques.
 
-RÉFÉRENCES
+## RÉFÉRENCES
 
-Al-Dhabyani, W., Gomaa, M., Khaled, H., & Fahmy, A. (2020). Dataset of breast ultrasound images. *Data in Brief*, 28, 104863\. 
+[1] Bray, F., Laversanne, M., Sung, H., Ferlay, J., Siegel, R. L., Soerjomataram, I., & Jemal, A. (2024). Global cancer statistics 2022: GLOBOCAN estimates of incidence and mortality worldwide for 36 cancers in 185 countries. *CA: A Cancer Journal for Clinicians*, 74(3), 229–263.
 
-[https://doi.org/10.1016/j.dib.2019.104863](https://doi.org/10.1016/j.dib.2019.104863)
+[2] Programme National de Lutte contre le Cancer — Côte d'Ivoire. (2022). *Plan Stratégique National de Lutte contre le Cancer 2022–2025*. Abidjan : Ministère de la Santé, de l'Hygiène Publique et de la Couverture Maladie Universelle.
 
-​
+[3] Al-Dhabyani, W., Gomaa, M., Khaled, H., & Fahmy, A. (2020). Dataset of breast ultrasound images. *Data in Brief*, 28, 104863.
 
-Huang, G., Liu, Z., Van Der Maaten, L., & Weinberger, K. Q. (2017). Densely connected convolutional networks. *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 4700–4708. 
+[4] Huang, G., Liu, Z., Van Der Maaten, L., & Weinberger, K. Q. (2017). Densely connected convolutional networks. *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 4700–4708.
 
-[https://doi.org/10.1109/CVPR.2017.243](https://doi.org/10.1109/CVPR.2017.243)
+[5] Lin, T.-Y., Goyal, P., Girshick, R., He, K., & Dollár, P. (2017). Focal loss for dense object detection. *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 2980–2988.
 
-​
+[6] Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., & Batra, D. (2017). Grad-CAM: Visual explanations from deep networks via gradient-based localization. *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 618–626.
 
-Lin, T.-Y., Goyal, P., Girshick, R., He, K., & Dollár, P. (2017). Focal loss for dense object detection. *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 2980–2988. 
+[7] He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 770–778.
 
-[https://doi.org/10.1109/ICCV.2017.324](https://doi.org/10.1109/ICCV.2017.324)
+[8] Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking model scaling for convolutional neural networks. *Proceedings of the 36th International Conference on Machine Learning (ICML)*, PMLR 97, 6105–6114.
 
-​
+[9] Dosovitskiy, A., et al. (2021). An image is worth 16x16 words: Transformers for image recognition at scale. *International Conference on Learning Representations (ICLR)*.
 
-Selvaraju, R. R., Cogswell, M., Das, A., Vedantam, R., Parikh, D., & Batra, D. (2017). Grad-CAM: Visual explanations from deep networks via gradient-based localization. *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 618–626. 
+[10] Zhang, H., Cissé, M., Dauphin, Y. N., & Lopez-Paz, D. (2018). Mixup: Beyond empirical risk minimization. *International Conference on Learning Representations (ICLR)*.
 
-[https://doi.org/10.1109/ICCV.2017.74](https://doi.org/10.1109/ICCV.2017.74)
+[11] Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019). CutMix [11]: Training strategy to train stronger classifiers with localizable features. *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 6023–6032.
 
-​
+[12] Raza, R., Zulfiqar, F., Tariq, S., Abbas Zaidi, S. S., Ghafoor, M. I., Sargano, A. B., & Hussain, S. (2024). Breast cancer classification from ultrasound images using deep learning. *Bioengineering*, 11(2), 116.
 
-He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep residual learning for image recognition. *Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR)*, 770–778. 
+[13] Shen, L., Margolies, L. R., Rothstein, J. H., Fluder, E., McBride, R., & Sieh, W. (2019). Deep learning to improve breast cancer detection on screening mammography. *Scientific Reports*, 9, 12495.
 
-[https://doi.org/10.1109/CVPR.2016.90](https://doi.org/10.1109/CVPR.2016.90)
+[14] McKinney, S. M., Sieniek, M., Godbole, V., Godwin, J., Antropova, N., Ashrafian, H., … Shetty, S. (2020). International evaluation of an AI system for breast cancer screening. *Nature*, 577, 89–94.
 
-​
+[15] Ferlay, J., Ervik, M., Lam, F., Laversanne, M., Colombet, M., Mery, L., … Bray, F. (2024). *Global Cancer Observatory: Cancer Today*. Lyon : International Agency for Research on Cancer.
 
-Tan, M., & Le, Q. V. (2019). EfficientNet: Rethinking model scaling for convolutional neural networks. *Proceedings of the 36th International Conference on Machine Learning (ICML)*, PMLR 97, 6105–6114.​
+[16] Tice, J. A., Cummings, S. R., Smith-Bindman, R., Ichikawa, L., Barlow, W. E., & Kerlikowske, K. (2008). Using clinical factors and mammographic breast density to estimate breast cancer risk: development and validation of a new predictive model. *Annals of Internal Medicine*, 148(5), 337–347.
 
-Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., … Houlsby, N. (2021). An image is worth 16×16 words: Transformers for image recognition at scale. *International Conference on Learning Representations (ICLR 2021\)*.​
+[17] Wanders, J. O., Holland, K., Veldhuis, W. B., Mann, R. M., Pijnappel, R. M., Peeters, P. H., … Karssemeijer, N. (2017). Volumetric breast density affects performance of digital screening mammography. *Breast Cancer Research and Treatment*, 162(1), 95–103.
 
-Zhang, H., Cissé, M., Dauphin, Y. N., & Lopez-Paz, D. (2018). Mixup: Beyond empirical risk minimization. *International Conference on Learning Representations (ICLR 2018\)*.​
+[18] Loeffler, M. D., & Kabba, M. (2022). Breast imaging and cancer in sub-Saharan Africa: a systematic review. *The Breast*, 61, 30–38.
 
-Yun, S., Han, D., Oh, S. J., Chun, S., Choe, J., & Yoo, Y. (2019). CutMix: Training strategy to train stronger classifiers with localizable features. *Proceedings of the IEEE International Conference on Computer Vision (ICCV)*, 6023–6032.​
+[19] Woo, S., Park, J., Lee, J.-Y., & Kweon, I. S. (2018). CBAM: Convolutional block attention module. *Proceedings of the European Conference on Computer Vision (ECCV)*, 3–19.
 
-Raza, R., Zulfiqar, F., Tariq, S., Abbas Zaidi, S. S., Ghafoor, M. I., Sargano, A. B., & Hussain, S. (2024). Breast cancer classification from ultrasound images using deep learning. *Bioengineering*, 11(2), 116.​
+[20] Litjens, G., Kooi, T., Bejnordi, B. E., Setio, A. A. A., Ciompi, F., Ghafoorian, M., … Sánchez, C. I. (2017). A survey on deep learning in medical image analysis. *Medical Image Analysis*, 42, 60–88.
 
-Shen, L., Margolies, L. R., Rothstein, J. H., Fluder, E., McBride, R., & Sieh, W. (2019). Deep learning to improve breast cancer detection on screening mammography. *Scientific Reports*, 9, 12495\. 
+[21] Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., & Salakhutdinov, R. (2014). Dropout: A simple way to prevent neural networks from overfitting. *Journal of Machine Learning Research*, 15(1), 1929–1958.
 
-[https://doi.org/10.1038/s41598-019-48995-4](https://doi.org/10.1038/s41598-019-48995-4)
-
-​
-
-McKinney, S. M., Sieniek, M., Godbole, V., Godwin, J., Antropova, N., Ashrafian, H., … Shetty, S. (2020). International evaluation of an AI system for breast cancer screening. *Nature*, 577, 89–94. 
-
-[https://doi.org/10.1038/s41586-019-1799-6](https://doi.org/10.1038/s41586-019-1799-6)
-
-​
-
-Bray, F., Laversanne, M., Sung, H., Ferlay, J., Siegel, R. L., Soerjomataram, I., & Jemal, A. (2024). Global cancer statistics 2022: GLOBOCAN estimates of incidence and mortality worldwide for 36 cancers in 185 countries. *CA: A Cancer Journal for Clinicians*, 74(3), 229–263. 
-
-[https://doi.org/10.3322/caac.21834](https://doi.org/10.3322/caac.21834)
-
-​
-
-Ferlay, J., Ervik, M., Lam, F., Laversanne, M., Colombet, M., Mery, L., … Bray, F. (2024). *Global Cancer Observatory: Cancer Today*. Lyon : International Agency for Research on Cancer. Disponible sur : 
-
-[https://gco.iarc.who.int/today](https://gco.iarc.who.int/today)
-
-​
-
-Programme National de Lutte contre le Cancer — Côte d'Ivoire. (2022). *Plan Stratégique National de Lutte contre le Cancer 2022–2025*. Abidjan : Ministère de la Santé, de l'Hygiène Publique et de la Couverture Maladie Universelle.​
-
-Tice, J. A., Cummings, S. R., Smith-Bindman, R., Ichikawa, L., Barlow, W. E., & Kerlikowske, K. (2008). Using clinical factors and mammographic breast density to estimate breast cancer risk: development and validation of a new predictive model. *Annals of Internal Medicine*, 148(5), 337–347.​
-
-Wanders, J. O., Holland, K., Veldhuis, W. B., Mann, R. M., Pijnappel, R. M., Peeters, P. H., … Karssemeijer, N. (2017). Volumetric breast density affects performance of digital screening mammography. *Breast Cancer Research and Treatment*, 162(1), 95–103.​
-
-Loeffler, M. D., & Kabba, M. (2022). Breast imaging and cancer in sub-Saharan Africa: a systematic review. *The Breast*, 61, 30–38.​
-
-Wwoo, S., Park, J., Lee, J.-Y., & Kweon, I. S. (2018). CBAM: Convolutional block attention module. *Proceedings of the European Conference on Computer Vision (ECCV)*, 3–19.​
-
- Litjens, G., Kooi, T., Bejnordi, B. E., Setio, A. A. A., Ciompi, F., Ghafoorian, M., … Sánchez, C. I. (2017). A survey on deep learning in medical image analysis. *Medical Image Analysis*, 42, 60–88. 
-
-[https://doi.org/10.1016/j.media.2017.07.005](https://doi.org/10.1016/j.media.2017.07.005)
-
-​
-
- Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., & Salakhutdinov, R. (2014). Dropout: A simple way to prevent neural networks from overfitting. *Journal of Machine Learning Research*, 15(1), 1929–1958.​
-
- Loshchilov, I., & Hutter, F. (2017). SGDR: Stochastic gradient descent with warm restarts. *International Conference on Learning Representations (ICLR 2017\)*.
+[22] Loshchilov, I., & Hutter, F. (2017). SGDR: Stochastic gradient descent with warm restarts. *International Conference on Learning Representations (ICLR)*.
 
 ## ANNEXES
 
