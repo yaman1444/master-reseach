@@ -16,14 +16,19 @@ class TrainUseCase:
         self.model_builder = model_builder
 
     def execute(self):
+        model_name = self.model_builder.get_name()
+        preprocessing_fn = self.model_builder.get_preprocessing_fn()
+        
         print("="*80)
-        print("ENTRAÎNEMENT DENSENET121 - ARCHITECTURE HEXAGONALE")
+        print(f"ENTRAÎNEMENT {model_name} - ARCHITECTURE HEXAGONALE")
         print("="*80)
         
+        # Le modèle fournit sa propre fonction de preprocessing au DataLoader
         train_gen, test_gen, class_weights = self.data_loader.get_train_test_generators(
             CONFIG['data_dir'],
             CONFIG['img_size'],
-            CONFIG['batch_size']
+            CONFIG['batch_size'],
+            preprocessing_fn=preprocessing_fn
         )
         
         model, base_model = self.model_builder.build_model(
@@ -32,9 +37,12 @@ class TrainUseCase:
             CONFIG['l2_reg']
         )
         
+        # Noms de fichiers dynamiques selon le modèle
+        safe_name = model_name.lower().replace("-", "").replace(" ", "_")
+        
         # PHASE 1
         print("\n" + "="*80)
-        print("PHASE 1: Training head (base frozen)")
+        print(f"PHASE 1: Training head ({model_name}, base frozen)")
         print("="*80 + "\n")
         
         model.compile(
@@ -46,7 +54,7 @@ class TrainUseCase:
         callbacks_p1 = [
             keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=7, mode='max', restore_best_weights=True, verbose=1),
             keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=3, mode='max', min_lr=1e-6, verbose=1),
-            keras.callbacks.ModelCheckpoint(str(MODELS_DIR / 'densenet121_phase1.keras'), monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
+            keras.callbacks.ModelCheckpoint(str(MODELS_DIR / f'{safe_name}_phase1.keras'), monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
         ]
         
         history1 = model.fit(
@@ -60,7 +68,7 @@ class TrainUseCase:
         
         # PHASE 2
         print("\n" + "="*80)
-        print("PHASE 2: Fine-tuning (top 20% unfrozen)")
+        print(f"PHASE 2: Fine-tuning ({model_name}, top 20% unfrozen)")
         print("="*80 + "\n")
         
         base_model.trainable = True
@@ -82,7 +90,7 @@ class TrainUseCase:
         callbacks_p2 = [
             keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=8, mode='max', restore_best_weights=True, verbose=1),
             keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=4, mode='max', min_lr=1e-7, verbose=1),
-            keras.callbacks.ModelCheckpoint(str(MODELS_DIR / 'densenet121_optimized.keras'), monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
+            keras.callbacks.ModelCheckpoint(str(MODELS_DIR / f'{safe_name}_optimized.keras'), monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
         ]
         
         history2 = model.fit(
@@ -94,9 +102,9 @@ class TrainUseCase:
             verbose=1
         )
         
-        self._evaluate_and_save(model, test_gen, history1, history2)
+        self._evaluate_and_save(model, test_gen, history1, history2, safe_name)
         
-    def _evaluate_and_save(self, model, test_gen, history1, history2):
+    def _evaluate_and_save(self, model, test_gen, history1, history2, safe_name):
         print("\n" + "="*80)
         print("FINAL EVALUATION")
         print("="*80 + "\n")
@@ -125,6 +133,10 @@ class TrainUseCase:
         print(f"   Accuracy:  {test_acc:.4f}")
         print(f"   Macro-F1:  {macro_f1:.4f}\n")
         
+        print("📈 Per-class metrics:")
+        for class_name, m in metrics.items():
+            print(f"   {class_name:10s}: P={m['precision']:.3f}, R={m['recall']:.3f}, F1={m['f1']:.3f}")
+        
         results = {
             'test_accuracy': float(test_acc),
             'test_loss': float(test_loss),
@@ -133,14 +145,14 @@ class TrainUseCase:
             'config': CONFIG
         }
         
-        with open(RESULTS_DIR / 'densenet121_optimized_results.json', 'w') as f:
+        with open(RESULTS_DIR / f'{safe_name}_results.json', 'w') as f:
             json.dump(results, f, indent=2)
             
-        self._plot_history(history1, history2)
+        self._plot_history(history1, history2, safe_name)
         print(f"\n✅ Training Completed. Models and Results saved.")
         print("="*80 + "\n")
         
-    def _plot_history(self, history1, history2):
+    def _plot_history(self, history1, history2, safe_name):
         fig, axes = plt.subplots(1, 2, figsize=(15, 5))
         
         acc = history1.history['accuracy'] + history2.history['accuracy']
@@ -164,4 +176,4 @@ class TrainUseCase:
         axes[1].legend()
         
         plt.tight_layout()
-        plt.savefig(RESULTS_DIR / 'densenet121_optimized_history.png', dpi=150, bbox_inches='tight')
+        plt.savefig(RESULTS_DIR / f'{safe_name}_history.png', dpi=150, bbox_inches='tight')

@@ -1,4 +1,4 @@
-from typing import Tuple, Any
+from typing import Tuple, Any, Callable, Optional
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
@@ -6,6 +6,7 @@ from tensorflow.keras.applications import DenseNet121
 
 from src.ports.model_port import ModelPort
 from src.domain.cbam import CBAM
+from src.domain.preprocessing import preprocess_for_densenet
 
 class DenseNetAdapter(ModelPort):
     def build_model(self, img_size: Tuple[int, int], dropout_rate: float, l2_reg: float) -> Tuple[Any, Any]:
@@ -35,3 +36,9 @@ class DenseNetAdapter(ModelPort):
         
         model = keras.Model(inputs, outputs)
         return model, base_model
+
+    def get_preprocessing_fn(self) -> Optional[Callable]:
+        return preprocess_for_densenet
+    
+    def get_name(self) -> str:
+        return "DenseNet-121"

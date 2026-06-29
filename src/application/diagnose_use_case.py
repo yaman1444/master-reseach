@@ -23,7 +23,7 @@ class DiagnoseUseCase:
                 continue
                 
             print(f"\n📁 Phase: {phase}")
-            for class_name in ['debut', 'grave', 'normal']:
+            for class_name in ['benign', 'malignant', 'normal']:
                 class_dir = phase_dir / class_name
                 if class_dir.exists():
                     count = len(list(class_dir.glob('*.png')))
