@@ -1,11 +1,13 @@
 import cv2
 import numpy as np
+from tensorflow.keras.applications.densenet import preprocess_input as densenet_preprocess_input
+from tensorflow.keras.applications.efficientnet import preprocess_input as effnet_preprocess_input
 
 def apply_clahe(image):
     """
     Applique CLAHE (Contrast Limited Adaptive Histogram Equalization).
     Retourne l'image en float32 dans la plage [0, 255].
-    La normalisation finale est laissée à la fonction appelante.
+    Améliore le contraste local pour les tissus denses (BI-RADS C/D).
     """
     img_uint8 = np.clip(image, 0, 255).astype(np.uint8)
     
@@ -23,16 +25,18 @@ def apply_clahe(image):
 
 def preprocess_for_densenet(image):
     """
-    CLAHE + normalisation [0, 1].
-    DenseNet121 avec poids ImageNet attend des valeurs [0, 1].
+    CLAHE + normalisation officielle DenseNet (mode 'torch').
+    DenseNet ImageNet weights attend: [0,255] -> [0,1] -> (x - mean) / std
+    La fonction preprocess_input de Keras gère tout cela automatiquement.
     """
     img = apply_clahe(image)
-    return img / 255.0
+    return densenet_preprocess_input(img)
 
 
 def preprocess_for_efficientnet(image):
     """
-    CLAHE uniquement, retourne [0, 255].
-    EfficientNetB0 Keras contient sa propre couche de normalisation interne.
+    CLAHE + normalisation officielle EfficientNet.
+    EfficientNet preprocess_input attend [0, 255].
     """
-    return apply_clahe(image)
+    img = apply_clahe(image)
+    return effnet_preprocess_input(img)

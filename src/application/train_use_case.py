@@ -73,23 +73,27 @@ class TrainUseCase:
         
         base_model.trainable = True
         total_layers = len(base_model.layers)
-        freeze_until = int(total_layers * 0.8)
+        freeze_until = int(total_layers * 0.9)
         
         for layer in base_model.layers[:freeze_until]:
             layer.trainable = False
+            
+        for layer in base_model.layers[freeze_until:]:
+            if isinstance(layer, keras.layers.BatchNormalization):
+                layer.trainable = False
         
         trainable = sum([1 for l in base_model.layers if l.trainable])
         print(f"Unfrozen layers: {trainable}/{total_layers}\n")
         
         model.compile(
-            optimizer=keras.optimizers.Adam(CONFIG['fine_tune_lr']),
+            optimizer=keras.optimizers.Adam(CONFIG['fine_tune_lr'] / 2),
             loss=FocalLoss(gamma=2.0, alpha=0.25),
             metrics=['accuracy']
         )
         
         callbacks_p2 = [
-            keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=8, mode='max', restore_best_weights=True, verbose=1),
-            keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=4, mode='max', min_lr=1e-7, verbose=1),
+            keras.callbacks.EarlyStopping(monitor='val_accuracy', patience=10, mode='max', restore_best_weights=True, verbose=1),
+            keras.callbacks.ReduceLROnPlateau(monitor='val_accuracy', factor=0.5, patience=5, mode='max', min_lr=1e-7, verbose=1),
             keras.callbacks.ModelCheckpoint(str(MODELS_DIR / f'{safe_name}_optimized.keras'), monitor='val_accuracy', save_best_only=True, mode='max', verbose=1)
         ]
         
