@@ -243,7 +243,12 @@ def generate_gradcam_report(model_path, data_dir, class_names, n_samples=12):
     print(f"\nGenerating Grad-CAM visualizations for {model_path}...")
     
     # Load model
-    model = tf.keras.models.load_model(model_path, compile=False)
+    import sys
+    sys.path.append('/Users/yaman/master-reseach/src')
+    from domain.focal_loss import FocalLoss
+    from domain.cbam import CBAM
+    custom_objects = {'focal_loss_fn': FocalLoss(gamma=2.0, alpha=0.25), 'CBAM': CBAM, 'FocalLoss': FocalLoss}
+    model = tf.keras.models.load_model(model_path, custom_objects=custom_objects, compile=False)
     
     # Load test data
     from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -286,21 +291,20 @@ if __name__ == '__main__':
     # Example usage
     os.makedirs('results', exist_ok=True)
     
-    class_names = ['benign', 'malignant', 'normal']
+    class_names = ['Bénin', 'Malin', 'Normal']
     
     # Generate for all trained models
     model_files = [
-        'models/densenet121_final.keras',
-        'models/resnet50_final.keras',
-        'models/efficientnetb0_final.keras'
+        'models/efficientnetb0_optimized.keras',
+        'models/densenet121_optimized.keras'
     ]
     
     for model_path in model_files:
         if os.path.exists(model_path):
             try:
                 generate_gradcam_report(
-                    model_path=model_path,
-                    data_dir='../datasets/test/',
+                    model_path,
+                    'datasets/test/',
                     class_names=class_names,
                     n_samples=12
                 )
