@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  pdf-converter:
+    build: .
+    container_name: pdf_converter_microservice
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DEBUG=1
+    command: python manage.py runserver 0.0.0.0:8000

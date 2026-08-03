@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convertisseur DOCX vers PDF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <div class="glass-card">
+            <h1>DOCX to PDF</h1>
+            <p class="subtitle">Haute fidélité. Zéro perte.</p>
+
+            <form id="convertForm">
+                <div class="drop-zone" id="dropZone">
+                    <span class="drop-zone-icon">📄</span>
+                    <p class="drop-zone-text">Glissez-déposez votre fichier ici</p>
+                    <p class="drop-zone-subtext">ou cliquez pour parcourir (Fichiers .docx uniquement)</p>
+                    <input type="file" id="fileInput" accept=".docx" required>
+                </div>
+
+                <div class="file-info" id="fileInfo">
+                    <div class="file-name" id="fileName">mon_document.docx</div>
+                    <button type="button" class="remove-file" id="removeFile">×</button>
+                </div>
+
+                <button type="submit" class="btn" id="submitBtn">
+                    <div class="loader" id="btnLoader"></div>
+                    <span id="btnText">Convertir en PDF</span>
+                </button>
+            </form>
+
+            <div class="status-container">
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>
